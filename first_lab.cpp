@@ -20,7 +20,9 @@ int readNumber(std::string_view prompt) {
 }
 
 int main() {
-    setlocale(LC_ALL, "Russian");
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+    std::setlocale(LC_ALL, "ru_RU.UTF-8");
 
     auto lib = std::make_shared<ScientificLibrary>("Научная Библиотека ВУЗа", 50);
 
