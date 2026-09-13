@@ -18,14 +18,14 @@ private:
 public:
     Publication(std::string_view t, std::string_view a, std::string_view tp, int y, std::weak_ptr<ScientificLibrary> lib);
 
-    // геттеры
+    // ГЈГҐГІГІГҐГ°Г»
     std::string_view getTitle() const;
     std::string_view getAuthor() const;
     std::string_view getType() const;
     int getYear() const;
     bool getIsBorrowed() const;
 
-    // сеттеры
+    // Г±ГҐГІГІГҐГ°Г»
     void setTitle(std::string_view t);
     void setAuthor(std::string_view a);
     void setType(std::string_view tp);
