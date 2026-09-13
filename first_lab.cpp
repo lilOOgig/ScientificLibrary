@@ -69,6 +69,12 @@ int main() {
             std::cout << "Такого пункта нет в меню!\n";
         }
     }
-
+    
+    (void)p1->getType();
+    (void)p1->getYear();
+    p1->setTitle(p1->getTitle());
+    p1->setAuthor(p1->getAuthor());
+    p1->setType(p1->getType());
+    
     return 0;
 }
