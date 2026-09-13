@@ -18,9 +18,9 @@ void Publication::setYear(int y) { year = y; }
 void Publication::setBorrowed(bool status) { isBorrowed = status; }
 
 void Publication::printInfo() const {
-    std::cout << "[" << type << "] \"" << title << "\" — " << author
-        << " (" << year << " ã.) | "
-        << (isBorrowed ? "Âûäàíà" : "Â íàëè÷èè") << std::endl;
+    std::cout << "[" << type << "] \"" << title << "\" â€” " << author
+        << " (" << year << " Ð³.) | "
+        << (isBorrowed ? "Ð’Ñ‹Ð´Ð°Ð½Ð°" : "Ð’ Ð½Ð°Ð»Ð¸Ñ‡Ð¸Ð¸") << std::endl;
 }
 
 ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
@@ -29,26 +29,26 @@ ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
 
 void ScientificLibrary::addPublication(const std::shared_ptr<Publication>& pub) {
     if (items.size() >= maxCapacity) {
-        std::cout << "Ëèìèò ôîíäà áèáëèîòåêè ïðåâûøåí!\n";
+        std::cout << "Ð›Ð¸Ð¼Ð¸Ñ‚ Ñ„Ð¾Ð½Ð´Ð° Ð±Ð¸Ð±Ð»Ð¸Ð¾Ñ‚ÐµÐºÐ¸ Ð¿Ñ€ÐµÐ²Ñ‹ÑˆÐµÐ½!\n";
         return;
     }
     items.push_back(pub);
-    std::cout << "Â êàòàëîã äîáàâëåíî: " << pub->getTitle() << std::endl;
+    std::cout << "Ð’ ÐºÐ°Ñ‚Ð°Ð»Ð¾Ð³ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¾: " << pub->getTitle() << std::endl;
 }
 
 bool ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_view userName) {
     for (auto& item : items) {
         if (item->getTitle() == pubTitle) {
             if (item->getIsBorrowed()) {
-                std::cout << "Îøèáî÷êà: Èçäàíèå \"" << pubTitle << "\" óæå íà ðóêàõ ó äðóãîãî ÷èòàòåëÿ!\n";
+                std::cout << "ÐžÑˆÐ¸Ð±Ð¾Ñ‡ÐºÐ°: Ð˜Ð·Ð´Ð°Ð½Ð¸Ðµ \"" << pubTitle << "\" ÑƒÐ¶Ðµ Ð½Ð° Ñ€ÑƒÐºÐ°Ñ… Ñƒ Ð´Ñ€ÑƒÐ³Ð¾Ð³Ð¾ Ñ‡Ð¸Ñ‚Ð°Ñ‚ÐµÐ»Ñ!\n";
                 return false;
             }
             item->setBorrowed(true);
-            std::cout << "Èçäàíèå \"" << pubTitle << "\" âûäàíî ÷èòàòåëþ " << userName << ".\n";
+            std::cout << "Ð˜Ð·Ð´Ð°Ð½Ð¸Ðµ \"" << pubTitle << "\" Ð²Ñ‹Ð´Ð°Ð½Ð¾ Ñ‡Ð¸Ñ‚Ð°Ñ‚ÐµÐ»ÑŽ " << userName << ".\n";
             return true;
         }
     }
-    std::cout << "Êíèãà ñ òàêèì íàçâàíèåì íå íàéäåíà.\n";
+    std::cout << "ÐšÐ½Ð¸Ð³Ð° Ñ Ñ‚Ð°ÐºÐ¸Ð¼ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÐµÐ¼ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð°.\n";
     return false;
 }
 
@@ -56,23 +56,23 @@ void ScientificLibrary::returnPublication(std::string_view pubTitle) {
     for (auto& item : items) {
         if (item->getTitle() == pubTitle) {
             if (!item->getIsBorrowed()) {
-                std::cout << "Ýêçåìïëÿð \"" << pubTitle << "\" óæå íàõîäèòñÿ íà ïîëêå.\n";
+                std::cout << "Ð­ÐºÐ·ÐµÐ¼Ð¿Ð»ÑÑ€ \"" << pubTitle << "\" ÑƒÐ¶Ðµ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚ÑÑ Ð½Ð° Ð¿Ð¾Ð»ÐºÐµ.\n";
                 return;
             }
             item->setBorrowed(false);
-            std::cout << "Ýêçåìïëÿð \"" << pubTitle << "\" óñïåøíî âîçâðàùåí â ôîíä.\n";
+            std::cout << "Ð­ÐºÐ·ÐµÐ¼Ð¿Ð»ÑÑ€ \"" << pubTitle << "\" ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰ÐµÐ½ Ð² Ñ„Ð¾Ð½Ð´.\n";
             return;
         }
     }
-    std::cout << "Èçäàíèå íå íàéäåíî.\n";
+    std::cout << "Ð˜Ð·Ð´Ð°Ð½Ð¸Ðµ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾.\n";
 }
 
 void ScientificLibrary::showCatalog() const {
     std::cout << "\n--------------------------------------------------\n";
-    std::cout << "Êàòàëîã: " << name << " (Çàïîëíåíî: " << items.size() << "/" << maxCapacity << ")\n";
+    std::cout << "ÐšÐ°Ñ‚Ð°Ð»Ð¾Ð³: " << name << " (Ð—Ð°Ð¿Ð¾Ð»Ð½ÐµÐ½Ð¾: " << items.size() << "/" << maxCapacity << ")\n";
     std::cout << "--------------------------------------------------\n";
     if (items.empty()) {
-        std::cout << "Â êàòàëîãå ïîêà íåò êíèã.\n";
+        std::cout << "Ð’ ÐºÐ°Ñ‚Ð°Ð»Ð¾Ð³Ðµ Ð¿Ð¾ÐºÐ° Ð½ÐµÑ‚ ÐºÐ½Ð¸Ð³.\n";
         return;
     }
     for (size_t i = 0; i < items.size(); ++i) {
@@ -83,7 +83,7 @@ void ScientificLibrary::showCatalog() const {
 }
 
 void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
-    std::cout << "\nÏîèñê ïóáëèêàöèé àâòîðà \"" << authorName << "\":\n";
+    std::cout << "\nÐŸÐ¾Ð¸ÑÐº Ð¿ÑƒÐ±Ð»Ð¸ÐºÐ°Ñ†Ð¸Ð¹ Ð°Ð²Ñ‚Ð¾Ñ€Ð° \"" << authorName << "\":\n";
     bool found = false;
     for (const auto& item : items) {
         if (item->getAuthor() == authorName) {
@@ -92,6 +92,6 @@ void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
         }
     }
     if (!found) {
-        std::cout << "Çàïèñåé íå îáíàðóæåíî.\n";
+        std::cout << "Ð—Ð°Ð¿Ð¸ÑÐµÐ¹ Ð½Ðµ Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½Ð¾.\n";
     }
 }
