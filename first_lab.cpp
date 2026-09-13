@@ -1,44 +1,74 @@
-﻿#include "ScientificLibrary.h"
+﻿#include <iostream>
+#include <memory>
+#include <string>
+#include <sstream>
+#include "ScientificLibrary.h"
+#include "Publication.h"
+
+int readNumber(std::string_view prompt) {
+    std::string line;
+    int val;
+    char tail;
+    while (true) {
+        std::cout << prompt;
+        std::getline(std::cin, line);
+        if (std::stringstream ss(line); ss >> val && !(ss >> tail)) {
+            return val;
+        }
+        std::cout << "Неверный ввод! Введите целое число.\n";
+    }
+}
 
 int main() {
-    // Установка русской локали для корректного вывода в консоль
     setlocale(LC_ALL, "Russian");
 
-    // Создание библиотеки
-    ScientificLibrary lib("Центральная Научная Библиотека");
+    auto lib = std::make_shared<ScientificLibrary>("Научная Библиотека ВУЗа", 50);
 
-    // Создание объектов публикаций
-    Publication pub1("Квантовая механика", "Ландау Л.Д.", "Книга", 1989);
-    Publication pub2("Теория алгоритмов", "Кормен Т.", "Книга", 2013);
-    Publication pub3("Оптимизация нейросетей", "Иванов А.А.", "Статья", 2023);
-    Publication pub4("Исследование систем", "Петров Б.В.", "Диссертация", 2021);
+    auto p1 = std::make_shared<Publication>("Квантовая механика", "Ландау Л.Д.", "Книга", 1989, lib);
+    auto p2 = std::make_shared<Publication>("Теория алгоритмов", "Кормен Т.", "Книга", 2013, lib);
+    auto p3 = std::make_shared<Publication>("Нейросети и обработка данных", "Иванов А.А.", "Статья", 2023, lib);
 
-    // Добавление в каталог
-    lib.addPublication(pub1);
-    lib.addPublication(pub2);
-    lib.addPublication(pub3);
-    lib.addPublication(pub4);
+    lib->addPublication(p1);
+    lib->addPublication(p2);
+    lib->addPublication(p3);
 
-    // Вывод каталога
-    lib.printCatalog();
+    int userChoice = -1;
+    while (userChoice != 0) {
+        std::cout << "\n=== Управление библиотекой ===\n"
+            << "1. Показать весь каталог\n"
+            << "2. Выдать книгу читателю\n"
+            << "3. Принять книгу обратно\n"
+            << "4. Найти книги по автору\n"
+            << "5. Изменить год издания книги\n"
+            << "0. Выйти из программы\n";
 
-    // Выдача книг (проверка ограничения)
-    std::cout << "--- Проверка выдачи книг ---" << std::endl;
-    lib.issuePublication("Квантовая механика", "д-р Сидоров");
+        userChoice = readNumber("Выберите команду: ");
 
-    // Попытка выдать ту же книгу повторно
-    lib.issuePublication("Квантовая механика", "проф. Кузнецов");
-
-    // Вывод состояния каталога
-    lib.printCatalog();
-
-    // Поиск
-    lib.searchByAuthor("Кормен Т.");
-
-    // Возврат и повторная выдача
-    std::cout << "\n--- Проверка возврата ---" << std::endl;
-    lib.returnPublication("Квантовая механика");
-    lib.issuePublication("Квантовая механика", "проф. Кузнецов");
+        switch (userChoice) {
+        case 1:
+            lib->showCatalog();
+            break;
+        case 2:
+            lib->issuePublication("Квантовая механика", "д-р Сидоров");
+            break;
+        case 3:
+            lib->returnPublication("Квантовая механика");
+            break;
+        case 4:
+            lib->searchByAuthor("Кормен Т.");
+            break;
+        case 5:
+            p1->setYear(2025);
+            std::cout << "Год издания успешно изменен!\n";
+            p1->printInfo();
+            break;
+        case 0:
+            std::cout << "Программа завершена.\n";
+            break;
+        default:
+            std::cout << "Такого пункта нет в меню!\n";
+        }
+    }
 
     return 0;
 }

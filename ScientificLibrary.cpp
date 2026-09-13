@@ -1,95 +1,97 @@
 #include "Publication.h"
 #include "ScientificLibrary.h"
 
-// --- Реализация Publication ---
-Publication::Publication(std::string t, std::string a, std::string tp, int y)
-    : title(t), author(a), type(tp), year(y), isBorrowed(false) {
+Publication::Publication(std::string_view t, std::string_view a, std::string_view tp, int y, std::weak_ptr<ScientificLibrary> lib)
+    : title(t), author(a), type(tp), year(y), isBorrowed(false), libraryRef(lib) {
 }
 
-std::string Publication::getTitle() const { return title; }
-std::string Publication::getAuthor() const { return author; }
-std::string Publication::getType() const { return type; }
+std::string_view Publication::getTitle() const { return title; }
+std::string_view Publication::getAuthor() const { return author; }
+std::string_view Publication::getType() const { return type; }
 int Publication::getYear() const { return year; }
 bool Publication::getIsBorrowed() const { return isBorrowed; }
 
-void Publication::setTitle(const std::string& t) { title = t; }
-void Publication::setAuthor(const std::string& a) { author = a; }
-void Publication::setType(const std::string& tp) { type = tp; }
+void Publication::setTitle(std::string_view t) { title = t; }
+void Publication::setAuthor(std::string_view a) { author = a; }
+void Publication::setType(std::string_view tp) { type = tp; }
 void Publication::setYear(int y) { year = y; }
 void Publication::setBorrowed(bool status) { isBorrowed = status; }
 
 void Publication::printInfo() const {
     std::cout << "[" << type << "] \"" << title << "\" — " << author
-        << " (" << year << " г.) | Статус: "
+        << " (" << year << " г.) | "
         << (isBorrowed ? "Выдана" : "В наличии") << std::endl;
 }
 
-// --- Реализация ScientificLibrary ---
-ScientificLibrary::ScientificLibrary(std::string name) : libraryName(name) {}
-
-void ScientificLibrary::addPublication(const Publication& pub) {
-    catalog.push_back(pub);
-    std::cout << "Добавлено в каталог: " << pub.getTitle() << std::endl;
+ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
+    : name(libName), maxCapacity(capacity) {
 }
 
-void ScientificLibrary::printCatalog() const {
-    std::cout << "\n====================================================================================" << std::endl;
-    std::cout << "Каталог библиотеки: " << libraryName << std::endl;
-    std::cout << "====================================================================================" << std::endl;
-    if (catalog.empty()) {
-        std::cout << "Каталог пуст." << std::endl;
+void ScientificLibrary::addPublication(const std::shared_ptr<Publication>& pub) {
+    if (items.size() >= maxCapacity) {
+        std::cout << "Лимит фонда библиотеки превышен!\n";
         return;
     }
-    for (size_t i = 0; i < catalog.size(); ++i) {
-        std::cout << i + 1 << ". ";
-        catalog[i].printInfo();
-    }
-    std::cout << "====================================================================================\n" << std::endl;
+    items.push_back(pub);
+    std::cout << "В каталог добавлено: " << pub->getTitle() << std::endl;
 }
 
-bool ScientificLibrary::issuePublication(const std::string& title, const std::string& researcherName) {
-    for (auto& pub : catalog) {
-        if (pub.getTitle() == title) {
-            if (pub.getIsBorrowed()) {
-                std::cout << "ОШИБКА: Материал \"" << title
-                    << "\" уже выдан другому исследователю!" << std::endl;
+bool ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_view userName) {
+    for (auto& item : items) {
+        if (item->getTitle() == pubTitle) {
+            if (item->getIsBorrowed()) {
+                std::cout << "Ошибочка: Издание \"" << pubTitle << "\" уже на руках у другого читателя!\n";
                 return false;
             }
-            pub.setBorrowed(true);
-            std::cout << "УСПЕХ: Материал \"" << title
-                << "\" успешно выдан исследователю " << researcherName << "." << std::endl;
+            item->setBorrowed(true);
+            std::cout << "Издание \"" << pubTitle << "\" выдано читателю " << userName << ".\n";
             return true;
         }
     }
-    std::cout << "ОШИБКА: Публикация с названием \"" << title << "\" не найдена." << std::endl;
+    std::cout << "Книга с таким названием не найдена.\n";
     return false;
 }
 
-void ScientificLibrary::returnPublication(const std::string& title) {
-    for (auto& pub : catalog) {
-        if (pub.getTitle() == title) {
-            if (!pub.getIsBorrowed()) {
-                std::cout << "Материал \"" << title << "\" и так находится в библиотеке." << std::endl;
+void ScientificLibrary::returnPublication(std::string_view pubTitle) {
+    for (auto& item : items) {
+        if (item->getTitle() == pubTitle) {
+            if (!item->getIsBorrowed()) {
+                std::cout << "Экземпляр \"" << pubTitle << "\" уже находится на полке.\n";
                 return;
             }
-            pub.setBorrowed(false);
-            std::cout << "Материал \"" << title << "\" успешно возвращен в библиотеку." << std::endl;
+            item->setBorrowed(false);
+            std::cout << "Экземпляр \"" << pubTitle << "\" успешно возвращен в фонд.\n";
             return;
         }
     }
-    std::cout << "ОШИБКА: Публикация не найдена." << std::endl;
+    std::cout << "Издание не найдено.\n";
 }
 
-void ScientificLibrary::searchByAuthor(const std::string& author) const {
-    std::cout << "\nРезультаты поиска по автору \"" << author << "\":" << std::endl;
+void ScientificLibrary::showCatalog() const {
+    std::cout << "\n--------------------------------------------------\n";
+    std::cout << "Каталог: " << name << " (Заполнено: " << items.size() << "/" << maxCapacity << ")\n";
+    std::cout << "--------------------------------------------------\n";
+    if (items.empty()) {
+        std::cout << "В каталоге пока нет книг.\n";
+        return;
+    }
+    for (size_t i = 0; i < items.size(); ++i) {
+        std::cout << i + 1 << ". ";
+        items[i]->printInfo();
+    }
+    std::cout << "--------------------------------------------------\n";
+}
+
+void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
+    std::cout << "\nПоиск публикаций автора \"" << authorName << "\":\n";
     bool found = false;
-    for (const auto& pub : catalog) {
-        if (pub.getAuthor() == author) {
-            pub.printInfo();
+    for (const auto& item : items) {
+        if (item->getAuthor() == authorName) {
+            item->printInfo();
             found = true;
         }
     }
     if (!found) {
-        std::cout << "Ничего не найдено." << std::endl;
+        std::cout << "Записей не обнаружено.\n";
     }
 }
