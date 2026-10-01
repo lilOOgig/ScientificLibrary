@@ -1,4 +1,4 @@
-#include "Publication.h"
+#include "Publication.h" 
 
 Publication::Publication(std::string_view t, std::string_view a, std::string_view tp, int y, std::weak_ptr<ScientificLibrary> lib)
     : title(t), author(a), type(tp), year(y), isBorrowed(false), libraryRef(lib) {
