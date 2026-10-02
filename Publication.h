@@ -41,6 +41,7 @@ public:
     bool operator>=(const Publication& other) const;
     bool operator<=(const Publication& other) const;
 
+    friend int getYearDifference(const Publication& p1, const Publication& p2);
     friend std::ostream& operator<<(std::ostream& os, const Publication& pub);
     friend std::istream& operator>>(std::istream& is, Publication& pub);
 };
