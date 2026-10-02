@@ -46,6 +46,8 @@ int main() {
             << "4. Найти книги по автору\n"
             << "5. Ввести новую публикацию (через operator>>)\n"
             << "6. Удалить публикацию (через operator-=)\n"
+            << "7. Сравнить книги (operator==, operator<)\n"
+            << "8. Посчитать разницу лет (дружественная функция)\n"
             << "0. Выйти из программы\n";
 
         userChoice = readNumber("Выберите команду: ");
@@ -73,6 +75,24 @@ int main() {
             case 6:
                 *lib -= p3; // Использование operator-=
                 break;
+            case 7: {
+                if (*p1 == *p2) {
+                    std::cout << "Книги одинаковые.\n";
+                }
+                else {
+                    std::cout << "Книги разные.\n";
+                }
+
+                if (*p1 < *p2) {
+                    std::cout << "\"" << p1->getTitle() << "\" издана раньше, чем \"" << p2->getTitle() << "\".\n";
+                }
+                break;
+            }
+            case 8: {
+                int diff = getYearDifference(*p1, *p2);
+                std::cout << "Разница в годах издания: " << diff << " лет.\n";
+                break;
+            }
             case 0:
                 std::cout << "Программа завершена.\n";
                 break;
