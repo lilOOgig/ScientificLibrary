@@ -27,7 +27,7 @@ void Publication::printInfo() const {
 }
 
 bool Publication::operator==(const Publication& other) const {
-    return title == other.title;
+    return title == other.title && author == other.author && year == other.year;
 }
 
 bool Publication::operator!=(const Publication& other) const {
@@ -77,4 +77,8 @@ std::istream& operator>>(std::istream& is, Publication& pub) {
     pub.isBorrowed = false;
 
     return is;
+}
+
+int getYearDifference(const Publication& p1, const Publication& p2) {
+    return std::abs(p1.year - p2.year); 
 }
