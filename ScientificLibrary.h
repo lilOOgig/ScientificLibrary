@@ -20,4 +20,7 @@ public:
     void returnPublication(std::string_view pubTitle);
     void showCatalog() const;
     void searchByAuthor(std::string_view authorName) const;
+
+    ScientificLibrary& operator+=(const std::shared_ptr<Publication>& pub);
+    ScientificLibrary& operator-=(const std::shared_ptr<Publication>& pub);
 };
