@@ -24,10 +24,10 @@ int main() {
 
     auto lib = std::make_shared<ScientificLibrary>("Научная Библиотека ВУЗа", 50);
 
-    auto p1 = std::make_shared<Publication>("Квантовая механика", "Ландау Л.Д.", "Книга", 1989, lib);
-    auto p2 = std::make_shared<Publication>("Теория алгоритмов", "Кормен Т.", "Книга", 2013, lib);
-    auto p3 = std::make_shared<Publication>("Нейросети и обработка данных", "Иванов А.А.", "Статья", 2023, lib);
-
+    auto p1 = std::make_shared<Publication>("Квантовая механика", "Ландау Л.Д.", PublicationType::Book, 1989, lib);
+    auto p2 = std::make_shared<Publication>("Теория алгоритмов", "Кормен Т.", PublicationType::Book, 2013, lib);
+    auto p3 = std::make_shared<Publication>("Нейросети и обработка данных", "Иванов А.А.", PublicationType::Article, 2023, lib);
+    
     lib->addPublication(p1);
     lib->addPublication(p2);
     lib->addPublication(p3);
