@@ -32,7 +32,6 @@ public:
     std::string_view getTitle() const;
     std::string_view getAuthor() const;
     PublicationType getType() const; 
-    std::string_view getTypeAsString() const;
     int getYear() const;
     bool getIsBorrowed() const;
 
@@ -44,4 +43,5 @@ public:
     void setBorrowed(bool status);
 
     void printInfo() const;
+    std::string_view getTypeAsString() const;
 };
