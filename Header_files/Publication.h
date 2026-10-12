@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 #include <memory>
-#include <stdexcept> // [ИЗ ВЕРСИИ 2] Подключено для исключений
+#include <stdexcept> 
 
 class ScientificLibrary;
 
@@ -27,7 +27,6 @@ private:
     std::weak_ptr<ScientificLibrary> libraryRef;
 
 public:
-    // [ИЗ ВЕРСИИ 2] Конструктор по умолчанию для ввода через std::cin >>
     Publication();
     Publication(std::string_view t, std::string_view a, PublicationType tp, int y, std::weak_ptr<ScientificLibrary> lib = {});
 
@@ -45,17 +44,14 @@ public:
 
     void printInfo() const;
 
-    // [ИЗ ВЕРСИИ 2] Операторы сравнения на равенство/неравенство
     bool operator==(const Publication& other) const;
     bool operator!=(const Publication& other) const;
 
-    // [ИЗ ВЕРСИИ 2] Операторы сравнения по году издания
     bool operator>(const Publication& other) const;
     bool operator<(const Publication& other) const;
     bool operator>=(const Publication& other) const;
     bool operator<=(const Publication& other) const;
 
-    // [ИЗ ВЕРСИИ 2] Дружественная функция вычисления разницы в годах
     friend int getYearDifference(const Publication& p1, const Publication& p2);
 
     // [ИЗ ВЕРСИИ 2] Дружественные операторы ввода/вывода в поток
