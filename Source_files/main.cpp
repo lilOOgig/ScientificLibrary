@@ -24,18 +24,16 @@ int main() {
 
     auto lib = std::make_shared<ScientificLibrary>("Научная Библиотека ВУЗа", 50);
 
-    // Из версии 1 сохранены аргументы PublicationType::Book / PublicationType::Article
     auto p1 = std::make_shared<Publication>("Квантовая механика", "Ландау Л.Д.", PublicationType::Book, 1989, lib);
     auto p2 = std::make_shared<Publication>("Теория алгоритмов", "Кормен Т.", PublicationType::Book, 2013, lib);
     auto p3 = std::make_shared<Publication>("Нейросети и обработка данных", "Иванов А.А.", PublicationType::Article, 2023, lib);
 
     try {
-        // [ИЗ ВЕРСИИ 2] Добавление элементов через оператор +=
         *lib += p1;
         *lib += p2;
         *lib += p3;
     }
-    catch (const std::exception& e) { // [ИЗ ВЕРСИИ 2] Обработка исключений
+    catch (const std::exception& e) { 
         std::cerr << e.what() << '\n';
     }
 
@@ -46,15 +44,15 @@ int main() {
             << "2. Выдать книгу читателю\n"
             << "3. Принять книгу обратно\n"
             << "4. Найти книги по автору\n"
-            << "5. Ввести новую публикацию\n"  // [ИЗ ВЕРСИИ 2] Новый пункт меню
-            << "6. Удалить публикацию\n"        // [ИЗ ВЕРСИИ 2] Новый пункт меню
-            << "7. Сравнить книги\n"             // [ИЗ ВЕРСИИ 2] Новый пункт меню
-            << "8. Посчитать разницу лет\n"     // [ИЗ ВЕРСИИ 2] Новый пункт меню
+            << "5. Ввести новую публикацию\n"  
+            << "6. Удалить публикацию\n"     
+            << "7. Сравнить книги\n"            
+            << "8. Посчитать разницу лет\n"     
             << "0. Выйти из программы\n";
 
         userChoice = readNumber("Выберите команду: ");
 
-        try { // [ИЗ ВЕРСИИ 2] Оборачивание обработки команд в try-catch
+        try { 
             switch (userChoice) {
             case 1:
                 lib->showCatalog();
@@ -68,16 +66,16 @@ int main() {
             case 4:
                 lib->searchByAuthor("Кормен Т.");
                 break;
-            case 5: { // [ИЗ ВЕРСИИ 2] Ввод через оператор >> и добавление через +=
+            case 5: { 
                 auto newPub = std::make_shared<Publication>();
                 std::cin >> *newPub; 
                 *lib += newPub;    
                 break;
             }
-            case 6: // [ИЗ ВЕРСИИ 2] Удаление через оператор -=
+            case 6: 
                 *lib -= p3; 
                 break;
-            case 7: { // [ИЗ ВЕРСИИ 2] Использование перегруженных операторов == и <
+            case 7: { 
                 if (*p1 == *p2) {
                     std::cout << "Книги одинаковые.\n";
                 }
@@ -90,7 +88,7 @@ int main() {
                 }
                 break;
             }
-            case 8: { // [ИЗ ВЕРСИИ 2] Вызов дружественной функции getYearDifference
+            case 8: {
                 int diff = getYearDifference(*p1, *p2);
                 std::cout << "Разница в годах издания: " << diff << " лет.\n";
                 break;
@@ -102,7 +100,7 @@ int main() {
                 std::cout << "Такого пункта нет в меню!\n";
             }
         }
-        catch (const std::exception& e) { // [ИЗ ВЕРСИИ 2] Перехват исключений
+        catch (const std::exception& e) { 
             std::cout << "\n[ОБРАБОТКА ИСКЛЮЧЕНИЯ]: " << e.what() << "\n";
         }
         
