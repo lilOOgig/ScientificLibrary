@@ -23,6 +23,7 @@ public:
     void showCatalog() const;
     void searchByAuthor(std::string_view authorName) const;
 
+
     // [ИЗ ВЕРСИИ 2] Перегрузка операторов += и -= для добавления и удаления публикаций
     ScientificLibrary& operator+=(const std::shared_ptr<Publication>& pub);
     ScientificLibrary& operator-=(const std::shared_ptr<Publication>& pub);
