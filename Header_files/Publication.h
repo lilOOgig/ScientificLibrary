@@ -54,7 +54,6 @@ public:
 
     friend int getYearDifference(const Publication& p1, const Publication& p2);
 
-    // [ИЗ ВЕРСИИ 2] Дружественные операторы ввода/вывода в поток
     friend std::ostream& operator<<(std::ostream& os, const Publication& pub);
     friend std::istream& operator>>(std::istream& is, Publication& pub);
 };
