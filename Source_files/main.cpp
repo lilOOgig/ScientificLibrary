@@ -105,6 +105,7 @@ int main() {
         catch (const std::exception& e) { // [ИЗ ВЕРСИИ 2] Перехват исключений
             std::cout << "\n[ОБРАБОТКА ИСКЛЮЧЕНИЯ]: " << e.what() << "\n";
         }
+        
     }
 
     return 0;
