@@ -99,7 +99,6 @@ std::istream& operator>>(std::istream& is, Publication& pub) {
     return is;
 }
 
-// [ИЗ ВЕРСИИ 2] Дружественная функция
 int getYearDifference(const Publication& p1, const Publication& p2) {
     return std::abs(p1.year - p2.year);
 }
