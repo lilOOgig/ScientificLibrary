@@ -4,6 +4,7 @@
 #include <string_view>
 #include <vector>
 #include <memory>
+#include <algorithm> // Требуется для std::any_of (Cppcheck)
 #include <stdexcept> // [ИЗ ВЕРСИИ 2] Подключено для исключений
 #include "Publication.h"
 
