@@ -5,14 +5,13 @@ ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
 }
 
 void ScientificLibrary::addPublication(const std::shared_ptr<Publication>& pub) {
-    *this += pub; // [ИЗ ВЕРСИИ 2] Вызов оператора +=
+    *this += pub; 
 }
 
 bool ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_view userName) {
     for (auto& item : items) {
         if (item->getTitle() == pubTitle) {
             if (item->getIsBorrowed()) {
-                // [ИЗ ВЕРСИИ 2] Выброс исключения вместо простого вывода в консоль
                 throw std::runtime_error("Ошибка: Издание \"" + std::string(pubTitle) + "\" уже выдано другому читателю!");
             }
             item->setBorrowed(true);
@@ -20,7 +19,6 @@ bool ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_
             return true;
         }
     }
-    // [ИЗ ВЕРСИИ 2] Выброс исключения при отсутствии книги
     throw std::runtime_error("Ошибка: Публикация \"" + std::string(pubTitle) + "\" не найдена!");
 }
 
@@ -28,7 +26,6 @@ void ScientificLibrary::returnPublication(std::string_view pubTitle) {
     for (auto& item : items) {
         if (item->getTitle() == pubTitle) {
             if (!item->getIsBorrowed()) {
-                // [ИЗ ВЕРСИИ 2] Выброс исключения
                 throw std::runtime_error("Ошибка: Экземпляр \"" + std::string(pubTitle) + "\" уже на полке!");
             }
             item->setBorrowed(false);
@@ -36,7 +33,6 @@ void ScientificLibrary::returnPublication(std::string_view pubTitle) {
             return;
         }
     }
-    // [ИЗ ВЕРСИИ 2] Выброс исключения
     throw std::runtime_error("Ошибка: Издание не найдено в каталоге!");
 }
 
@@ -49,7 +45,7 @@ void ScientificLibrary::showCatalog() const {
         return;
     }
     for (size_t i = 0; i < items.size(); ++i) {
-        std::cout << i + 1 << ". " << *items[i] << std::endl; // [ИЗ ВЕРСИИ 2] Вывод через оператор <<
+        std::cout << i + 1 << ". " << *items[i] << std::endl; 
     }
     std::cout << "--------------------------------------------------\n";
 }
@@ -59,7 +55,7 @@ void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
     bool found = false;
     for (const auto& item : items) {
         if (item->getAuthor() == authorName) {
-            std::cout << *item << std::endl; // [ИЗ ВЕРСИИ 2] Вывод через оператор <<
+            std::cout << *item << std::endl; 
             found = true;
         }
     }
@@ -68,7 +64,6 @@ void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
     }
 }
 
-// [ИЗ ВЕРСИИ 2] Перегрузка оператора += с проверкой уникальности и лимита
 ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publication>& pub) {
     if (!pub) return *this;
 
@@ -76,9 +71,8 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
         throw std::runtime_error("Ошибка: Лимит фонда библиотеки превышен!");
     }
 
-    // Использование std::any_of для Cppcheck, внутри которого вызывается [ИЗ ВЕРСИИ 2] перегруженный ==
     if (std::any_of(items.begin(), items.end(), [&pub](const auto& item) {
-        return *item == *pub; // [ИЗ ВЕРСИИ 2] Использование перегруженного ==
+        return *item == *pub; 
     })) {
         throw std::runtime_error("Ошибка: Книга с таким названием уже есть в базе!");
     }
@@ -88,12 +82,11 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
     return *this;
 }
 
-// [ИЗ ВЕРСИИ 2] Перегрузка оператора -= для удаления публикаций
 ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publication>& pub) {
     if (!pub) return *this;
 
     for (auto it = items.begin(); it != items.end(); ++it) {
-        if (**it == *pub) { // [ИЗ ВЕРСИИ 2] Использование перегруженного ==
+        if (**it == *pub) { 
             std::cout << "Удалено из фонда: " << (*it)->getTitle() << std::endl;
             items.erase(it);
             return *this;
