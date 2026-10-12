@@ -11,13 +11,12 @@ std::string_view typeToString(PublicationType type) {
     }
 }
 
-// [ИЗ ВЕРСИИ 2] Конструктор по умолчанию
 Publication::Publication() 
     : title(""), author(""), type(PublicationType::Book), year(1), isBorrowed(false) {}
 
 Publication::Publication(std::string_view t, std::string_view a, PublicationType tp, int y, std::weak_ptr<ScientificLibrary> lib)
     : title(t), author(a), type(tp), isBorrowed(false), libraryRef(lib) {
-    setYear(y); // [ИЗ ВЕРСИИ 2] Вызов сеттера с валидацией
+    setYear(y); 
 }
 
 std::string_view Publication::getTitle() const { return title; }
@@ -32,7 +31,6 @@ void Publication::setType(PublicationType tp) { type = tp; }
 void Publication::setBorrowed(bool status) { isBorrowed = status; }
 
 void Publication::setYear(int y) {
-    // [ИЗ ВЕРСИИ 2] Проверка валидности года с выбросом исключения
     if (y <= 0) {
         throw std::invalid_argument("Ошибка: Год издания должен быть положительным числом!");
     }
@@ -40,10 +38,9 @@ void Publication::setYear(int y) {
 }
 
 void Publication::printInfo() const {
-    std::cout << *this << std::endl; // [ИЗ ВЕРСИИ 2] Вывод через оператор <<
+    std::cout << *this << std::endl; 
 }
 
-// [ИЗ ВЕРСИИ 2] Реализации операторов сравнения
 bool Publication::operator==(const Publication& other) const {
     return title == other.title && author == other.author && year == other.year && type == other.type;
 }
@@ -68,7 +65,6 @@ bool Publication::operator>=(const Publication& other) const {
     return year >= other.year;
 }
 
-// [ИЗ ВЕРСИИ 2] Оператор вывода в поток
 std::ostream& operator<<(std::ostream& os, const Publication& pub) {
     os << "[" << typeToString(pub.type) << "] \"" << pub.title << "\" — " << pub.author
        << " (" << pub.year << " г.) | "
@@ -76,7 +72,6 @@ std::ostream& operator<<(std::ostream& os, const Publication& pub) {
     return os;
 }
 
-// [ИЗ ВЕРСИИ 2] Оператор ввода из потока (адаптирован под enum)
 std::istream& operator>>(std::istream& is, Publication& pub) {
     std::cout << "Введите название: ";
     std::getline(is >> std::ws, pub.title);
