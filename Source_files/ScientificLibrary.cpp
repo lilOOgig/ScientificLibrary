@@ -76,10 +76,11 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
         throw std::runtime_error("Ошибка: Лимит фонда библиотеки превышен!");
     }
 
-    for (const auto& item : items) {
-        if (*item == *pub) { // [ИЗ ВЕРСИИ 2] Использование перегруженного ==
-            throw std::runtime_error("Ошибка: Книга с таким названием уже есть в базе!");
-        }
+    // Использование std::any_of для Cppcheck, внутри которого вызывается [ИЗ ВЕРСИИ 2] перегруженный ==
+    if (std::any_of(items.begin(), items.end(), [&pub](const auto& item) {
+        return *item == *pub; // [ИЗ ВЕРСИИ 2] Использование перегруженного ==
+    })) {
+        throw std::runtime_error("Ошибка: Книга с таким названием уже есть в базе!");
     }
 
     items.push_back(pub);
