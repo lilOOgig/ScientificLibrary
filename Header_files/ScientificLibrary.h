@@ -4,8 +4,8 @@
 #include <string_view>
 #include <vector>
 #include <memory>
-#include <algorithm> // Требуется для std::any_of (Cppcheck)
-#include <stdexcept> // [ИЗ ВЕРСИИ 2] Подключено для исключений
+#include <algorithm> 
+#include <stdexcept> 
 #include "Publication.h"
 
 class ScientificLibrary : public std::enable_shared_from_this<ScientificLibrary> {
@@ -23,8 +23,6 @@ public:
     void showCatalog() const;
     void searchByAuthor(std::string_view authorName) const;
 
-
-    // [ИЗ ВЕРСИИ 2] Перегрузка операторов += и -= для добавления и удаления публикаций
     ScientificLibrary& operator+=(const std::shared_ptr<Publication>& pub);
     ScientificLibrary& operator-=(const std::shared_ptr<Publication>& pub);
 };
