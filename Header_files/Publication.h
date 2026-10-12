@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <memory>
+#include <stdexcept> // [ИЗ ВЕРСИИ 2] Подключено для исключений
 
 class ScientificLibrary;
 
@@ -26,20 +27,38 @@ private:
     std::weak_ptr<ScientificLibrary> libraryRef;
 
 public:
-    Publication(std::string_view t, std::string_view a, PublicationType tp, int y, std::weak_ptr<ScientificLibrary> lib);
+    // [ИЗ ВЕРСИИ 2] Конструктор по умолчанию для ввода через std::cin >>
+    Publication();
+    Publication(std::string_view t, std::string_view a, PublicationType tp, int y, std::weak_ptr<ScientificLibrary> lib = {});
 
     std::string_view getTitle() const;
     std::string_view getAuthor() const;
-    PublicationType getType() const; 
+    PublicationType getType() const;
     int getYear() const;
     bool getIsBorrowed() const;
 
     void setTitle(std::string_view t);
     void setAuthor(std::string_view a);
-    void setType(std::string_view tp);
+    void setType(PublicationType tp);
     void setYear(int y);
     void setBorrowed(bool status);
 
     void printInfo() const;
-    std::string_view getTypeAsString() const;
+
+    // [ИЗ ВЕРСИИ 2] Операторы сравнения на равенство/неравенство
+    bool operator==(const Publication& other) const;
+    bool operator!=(const Publication& other) const;
+
+    // [ИЗ ВЕРСИИ 2] Операторы сравнения по году издания
+    bool operator>(const Publication& other) const;
+    bool operator<(const Publication& other) const;
+    bool operator>=(const Publication& other) const;
+    bool operator<=(const Publication& other) const;
+
+    // [ИЗ ВЕРСИИ 2] Дружественная функция вычисления разницы в годах
+    friend int getYearDifference(const Publication& p1, const Publication& p2);
+
+    // [ИЗ ВЕРСИИ 2] Дружественные операторы ввода/вывода в поток
+    friend std::ostream& operator<<(std::ostream& os, const Publication& pub);
+    friend std::istream& operator>>(std::istream& is, Publication& pub);
 };
