@@ -1,5 +1,4 @@
 #include "Book.h"
-#include <limits>
 #include <iostream>
 
 Book::Book() : Publication("", "", 2000), pageCount(100) {}
@@ -19,9 +18,5 @@ void Book::printSpecific(std::ostream& os) const {
 
 void Book::readSpecific(std::istream& is) {
     std::cout << "Введите количество страниц: ";
-    if (!(is >> pageCount)) {
-        is.clear();
-        pageCount = 100;
-    }
-    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    safeReadNumber(is, pageCount, 100);
 }
