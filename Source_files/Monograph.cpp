@@ -1,5 +1,4 @@
 #include "Monograph.h"
-#include <limits>
 #include <iostream>
 
 Monograph::Monograph() : Publication("", "", 2020), isbn("000-0-00-000000-0"), circulation(500) {}
@@ -20,10 +19,5 @@ void Monograph::readSpecific(std::istream& is) {
     std::getline(is >> std::ws, isbn);
 
     std::cout << "Введите тираж: ";
-    if (!(is >> circulation)) {
-        is.clear();
-        circulation = 500;
-    }
-    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    safeReadNumber(is, circulation, 500);
 }
-
