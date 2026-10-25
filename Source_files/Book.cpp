@@ -8,9 +8,7 @@ Book::Book(std::string_view t, std::string_view a, int y, int pages, std::weak_p
 
 int Book::getPageCount() const { return pageCount; }
 
-std::string_view Book::getType() const {
-    return "Книга";
-}
+std::string_view Book::getType() const { return "Книга"; }
 
 void Book::printSpecific(std::ostream& os) const {
     os << " | Страниц: " << pageCount;
