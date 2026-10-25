@@ -78,3 +78,5 @@ std::istream& operator>>(std::istream& is, Publication& pub) {
 int getYearDifference(const Publication& p1, const Publication& p2) {
     return std::abs(p1.year - p2.year);
 }
+
+
