@@ -1,5 +1,4 @@
 #include "Journal.h"
-#include <limits>
 #include <iostream>
 
 Journal::Journal() : Publication("", "", 2024), volumeNumber(1), publisher("Издательство") {}
@@ -17,11 +16,7 @@ void Journal::printSpecific(std::ostream& os) const {
 
 void Journal::readSpecific(std::istream& is) {
     std::cout << "Введите номер тома: ";
-    if (!(is >> volumeNumber)) {
-        is.clear();
-        volumeNumber = 1;
-    }
-    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    safeReadNumber(is, volumeNumber, 1);
 
     std::cout << "Введите название издательства: ";
     std::getline(is, publisher);
