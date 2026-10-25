@@ -3,50 +3,43 @@
 #include <string>
 #include <string_view>
 #include <memory>
-#include <stdexcept> 
+#include <stdexcept>
 
 class ScientificLibrary;
 
-enum class PublicationType {
-    Article,     
-    Book, 
-    Journal,
-    Monograph,    
-    Conference    
-};
-
-std::string_view typeToString(PublicationType type);
-
 class Publication {
-private:
+protected:
     std::string title;
     std::string author;
-    PublicationType type;
     int year;
     bool isBorrowed;
     std::weak_ptr<ScientificLibrary> libraryRef;
 
 public:
     Publication();
-    Publication(std::string_view t, std::string_view a, PublicationType tp, int y, std::weak_ptr<ScientificLibrary> lib = {});
+    Publication(std::string_view t, std::string_view a, int y, std::weak_ptr<ScientificLibrary> lib = {});
+
+    virtual ~Publication() = default;
 
     std::string_view getTitle() const;
     std::string_view getAuthor() const;
-    PublicationType getType() const;
     int getYear() const;
     bool getIsBorrowed() const;
 
     void setTitle(std::string_view t);
     void setAuthor(std::string_view a);
-    void setType(PublicationType tp);
     void setYear(int y);
     void setBorrowed(bool status);
+
+    virtual std::string_view getType() const = 0;
+
+    virtual void printSpecific(std::ostream& os) const;
+    virtual void readSpecific(std::istream& is);
 
     void printInfo() const;
 
     bool operator==(const Publication& other) const;
     bool operator!=(const Publication& other) const;
-
     bool operator>(const Publication& other) const;
     bool operator<(const Publication& other) const;
     bool operator>=(const Publication& other) const;
