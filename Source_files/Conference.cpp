@@ -1,5 +1,4 @@
 #include "Conference.h"
-#include <limits>
 #include <iostream>
 
 Conference::Conference() : Publication("", "", 2023), conferenceName("Научная конференция"), location("Москва") {}
