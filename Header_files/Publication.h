@@ -3,6 +3,7 @@
 #include <string>
 #include <string_view>
 #include <memory>
+#include <limits>
 #include <stdexcept>
 
 class ScientificLibrary;
@@ -14,6 +15,15 @@ protected:
     int year;
     bool isBorrowed;
     std::weak_ptr<ScientificLibrary> libraryRef;
+
+    // Общий метод для предотвращения дублирования кода ввода (для SonarQube)
+    static void safeReadNumber(std::istream& is, int& value, int defaultValue) {
+        if (!(is >> value)) {
+            is.clear();
+            value = defaultValue;
+        }
+        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
 
 public:
     Publication();
