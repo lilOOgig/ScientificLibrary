@@ -26,3 +26,4 @@ void Monograph::readSpecific(std::istream& is) {
     }
     is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
+
