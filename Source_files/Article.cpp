@@ -18,3 +18,4 @@ void Article::readSpecific(std::istream& is) {
     std::cout << "Введите номер выпуска: ";
     safeReadNumber(is, issueNumber, 1);
 }
+
