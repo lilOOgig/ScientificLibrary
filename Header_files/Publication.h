@@ -60,3 +60,4 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Publication& pub);
     friend std::istream& operator>>(std::istream& is, Publication& pub);
 };
+
