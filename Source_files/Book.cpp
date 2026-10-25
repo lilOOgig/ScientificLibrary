@@ -18,3 +18,4 @@ void Book::readSpecific(std::istream& is) {
     std::cout << "Введите количество страниц: ";
     safeReadNumber(is, pageCount, 100);
 }
+
