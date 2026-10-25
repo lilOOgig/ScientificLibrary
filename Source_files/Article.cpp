@@ -1,5 +1,4 @@
 #include "Article.h"
-#include <limits>
 #include <iostream>
 
 Article::Article() : Publication("", "", 2023), issueNumber(1) {}
@@ -20,9 +19,5 @@ void Article::readSpecific(std::istream& is) {
     std::getline(is >> std::ws, journalName);
 
     std::cout << "Введите номер выпуска: ";
-    if (!(is >> issueNumber)) {
-        is.clear();
-        issueNumber = 1;
-    }
-    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    safeReadNumber(is, issueNumber, 1);
 }
