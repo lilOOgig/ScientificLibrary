@@ -1,14 +1,13 @@
 #pragma once
-#include <iostream>
 #include <string>
 #include <string_view>
 #include <vector>
 #include <memory>
-#include <algorithm> 
-#include <stdexcept> 
+#include <iostream>
+#include <algorithm>
 #include "Publication.h"
 
-class ScientificLibrary : public std::enable_shared_from_this<ScientificLibrary> {
+class ScientificLibrary {
 private:
     std::string name;
     size_t maxCapacity;
@@ -22,6 +21,13 @@ public:
     void returnPublication(std::string_view pubTitle);
     void showCatalog() const;
     void searchByAuthor(std::string_view authorName) const;
+
+    // Полиморфные вызовы
+    void applyMassEffect(int value);
+    void showSpecificValues() const;
+    void findMostValuable() const;
+
+    const std::vector<std::shared_ptr<Publication>>& getItems() const { return items; }
 
     ScientificLibrary& operator+=(const std::shared_ptr<Publication>& pub);
     ScientificLibrary& operator-=(const std::shared_ptr<Publication>& pub);
