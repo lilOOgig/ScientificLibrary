@@ -3,8 +3,8 @@
 
 class Journal : public Publication {
 private:
-    int volumeNumber;     // Том
-    std::string publisher; // Издательство
+    int volumeNumber;
+    std::string publisher;
 public:
     Journal();
     Journal(std::string_view t, std::string_view a, int y, int volume, std::string_view pub, std::weak_ptr<ScientificLibrary> lib = {});
