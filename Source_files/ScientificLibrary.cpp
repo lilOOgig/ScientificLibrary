@@ -1,4 +1,3 @@
-// --- ScientificLibrary.cpp ---
 #include "ScientificLibrary.h"
 
 ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
@@ -117,3 +116,4 @@ ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publicati
     }
     throw std::runtime_error("Издание для удаления не найдено!");
 }
+
