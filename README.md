@@ -29,7 +29,7 @@
 ---
 
 ## Качество кода
-Статический анализ кода выполнен с помощью [SonarCloud](https://sonarcloud.io/organizations/shiryajlmttmh/projects).
+Статический анализ кода выполнен с помощью [SonarCloud](https://sonarcloud.io/projects).
 
 ---
 
@@ -62,7 +62,7 @@
 ---
 
 ## Качество кода
-Статический анализ кода выполнен с помощью [SonarCloud](https://sonarcloud.io/organizations/shiryajlmttmh/projects).
+Статический анализ кода выполнен с помощью [SonarCloud](https://sonarcloud.io/projects).
 
 ---
 
@@ -101,7 +101,7 @@
 ---
 
 ## Качество кода
-Статический анализ кода выполнен с помощью [SonarCloud](https://sonarcloud.io/organizations/lilOOgig/projects).
+Статический анализ кода выполнен с помощью [SonarCloud](https://sonarcloud.io/projects).
 
 ---
 
@@ -141,6 +141,6 @@
 ---
 
 ## Качество кода
-Статический анализ кода выполнен с помощью [SonarCloud](https://sonarcloud.io/organizations/shiryajlmttmh/projects).
+Статический анализ кода выполнен с помощью [SonarCloud](https://sonarcloud.io/projects).
 
 ---
