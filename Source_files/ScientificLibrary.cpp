@@ -1,4 +1,5 @@
 #include "ScientificLibrary.h"
+#include <algorithm> 
 
 ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
     : name(libName), maxCapacity(capacity) {
@@ -70,12 +71,11 @@ void ScientificLibrary::findMostValuable() const {
         std::cout << "Каталог пуст.\n";
         return;
     }
-    auto best = items[0];
-    for (const auto& item : items) {
-        if (*item > *best) {
-            best = item;
-        }
-    }
+    
+    auto best = *std::max_element(items.begin(), items.end(), [](const auto& a, const auto& b) {
+        return *a < *b;
+    });
+
     std::cout << "\nИздание с наибольшим профильным показателем:\n"
         << "Тип: " << best->getType() << "\n"
         << "Название: " << best->getTitle() << "\n"
@@ -116,4 +116,3 @@ ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publicati
     }
     throw std::runtime_error("Издание для удаления не найдено!");
 }
-
