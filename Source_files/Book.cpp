@@ -1,27 +1,43 @@
 #include "Book.h"
-#include <limits>
 #include <iostream>
 
-Book::Book() : Publication("", "", 2000), pageCount(100) {}
-
 Book::Book(std::string_view t, std::string_view a, int y, int pages, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), pageCount(pages) {}
+    : Publication(t, a, y, lib), pageCount(pages) {
+}
 
 int Book::getPageCount() const { return pageCount; }
 
-std::string_view Book::getType() const {
-    return "Книга";
+std::string_view Book::getType() const { return "Книга"; }
+
+void Book::printInformation(std::ostream& os) const {
+    os << "[Книга] \"" << title << "\" — " << author << " (" << year << " г.) | Страниц: " << pageCount;
 }
 
-void Book::printSpecific(std::ostream& os) const {
-    os << " | Страниц: " << pageCount;
-}
+double Book::calculateSpecificValue() const { return static_cast<double>(pageCount); }
 
-void Book::readSpecific(std::istream& is) {
-    std::cout << "Введите количество страниц: ";
-    if (!(is >> pageCount)) {
-        is.clear();
-        pageCount = 100;
+void Book::applyEffect(int value) {
+    if (value <= 0) {
+        std::cout << "Ошибка: значение должно быть положительным!\n";
+        return;
     }
-    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    pageCount += value;
+    std::cout << "Книге \"" << title << "\" добавлено страниц: " << value << ". Всего: " << pageCount << "\n";
 }
+
+void Book::readFrom(std::istream& is) {
+    std::cout << "Введите название книги: ";
+    std::getline(is >> std::ws, title);
+    std::cout << "Введите автора: ";
+    std::getline(is, author);
+    std::cout << "Введите год издания: ";
+    int y; is >> y; setYear(y);
+    std::cout << "Введите количество страниц: ";
+    is >> pageCount;
+}
+
+bool Book::equals(const Publication& other) const {
+    const auto* b = dynamic_cast<const Book*>(&other);
+    return b && title == b->title && author == b->author && year == b->year && pageCount == b->pageCount;
+}
+
+std::string Book::getValueName() const { return "Количество страниц"; }
