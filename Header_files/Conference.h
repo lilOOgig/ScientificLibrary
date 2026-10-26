@@ -3,8 +3,8 @@
 
 class Conference : public Publication {
 private:
-    std::string conferenceName; // Название конференции
-    std::string location;       // Город / Место проведения
+    std::string conferenceName;
+    std::string location;
 public:
     Conference();
     Conference(std::string_view t, std::string_view a, int y, std::string_view confName, std::string_view loc, std::weak_ptr<ScientificLibrary> lib = {});
