@@ -1,4 +1,5 @@
 #include "Book.h"
+#include <limits>
 #include <iostream>
 
 Book::Book() : Publication("", "", 2000), pageCount(100) {}
@@ -8,7 +9,9 @@ Book::Book(std::string_view t, std::string_view a, int y, int pages, std::weak_p
 
 int Book::getPageCount() const { return pageCount; }
 
-std::string_view Book::getType() const { return "Книга"; }
+std::string_view Book::getType() const {
+    return "Книга";
+}
 
 void Book::printSpecific(std::ostream& os) const {
     os << " | Страниц: " << pageCount;
@@ -16,6 +19,9 @@ void Book::printSpecific(std::ostream& os) const {
 
 void Book::readSpecific(std::istream& is) {
     std::cout << "Введите количество страниц: ";
-    safeReadNumber(is, pageCount, 100);
+    if (!(is >> pageCount)) {
+        is.clear();
+        pageCount = 100;
+    }
+    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
-
