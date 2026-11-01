@@ -12,16 +12,14 @@ public:
     Publication(std::string_view title, std::string_view author, int year, std::weak_ptr<ScientificLibrary> lib = {});
     virtual ~Publication() = default;
 
-    // Чисто виртуальные методы (интерфейс базового класса)
-    virtual std::string_view getType() const = 0;
-    virtual void printInformation(std::ostream& os) const = 0;
-    virtual double calculateSpecificValue() const = 0;   // Специфическое вычисление/параметр для типа
-    virtual void applyEffect(int value) = 0;             // Специфическое действие над изданием
-    virtual void readFrom(std::istream& is) = 0;
+    virtual std::string_view getType() const = 0;              
+    virtual double getKeyIndicator() const = 0;                
+    virtual std::string getKeyIndicatorName() const = 0;       
+    virtual void updateKeyIndicator(int value) = 0;           
     virtual bool equals(const Publication& other) const = 0;
-    virtual std::string getValueName() const = 0;        // Название специфического параметра
 
-    // Геттеры и сеттеры
+    virtual void printInformation(std::ostream& os) const;
+
     std::string_view getTitle() const;
     std::string_view getAuthor() const;
     int getYear() const;
@@ -34,9 +32,16 @@ public:
     void setBorrowed(bool status);
     void setLibraryRef(std::weak_ptr<ScientificLibrary> lib);
 
-    // Перегрузка операторов
+    // Вывод и ввод каждого общего поля отдельно
+    void printTitle(std::ostream& os) const;
+    void printAuthor(std::ostream& os) const;
+    void printYear(std::ostream& os) const;
+    void readTitle(std::istream& is);
+    void readAuthor(std::istream& is);
+    void readYear(std::istream& is);
+
     friend std::ostream& operator<<(std::ostream& os, const Publication& pub);
-    friend std::istream& operator>>(std::istream& is, Publication& pub);
+    friend std::istream& operator>>(std::istream& is, Publication& pub);   
 
     bool operator<(const Publication& other) const;
     bool operator>(const Publication& other) const;
@@ -46,6 +51,11 @@ public:
     bool operator!=(const Publication& other) const;
 
 protected:
+    bool hasSameCommonData(const Publication& other) const;
+
+    static int readInt(std::istream& is, std::string_view prompt);
+    static std::string readLine(std::istream& is, std::string_view prompt);
+
     std::string title;
     std::string author;
     int year;
