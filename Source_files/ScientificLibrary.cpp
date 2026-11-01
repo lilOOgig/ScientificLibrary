@@ -1,5 +1,5 @@
 #include "ScientificLibrary.h"
-#include <algorithm> 
+#include <algorithm>
 
 ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
     : name(libName), maxCapacity(capacity) {
@@ -49,37 +49,35 @@ void ScientificLibrary::showCatalog() const {
 }
 
 // Массовое действие над всей коллекцией (полиморфизм)
-void ScientificLibrary::applyMassEffect(int value) {
+void ScientificLibrary::updateAllKeyIndicators(int value) {
     for (auto& item : items) {
-        item->applyEffect(value);
+        item->updateKeyIndicator(value);
     }
 }
 
-// Вывод специфических параметров для каждого типа издания (полиморфизм)
-void ScientificLibrary::showSpecificValues() const {
-    std::cout << "\n=== Специфические параметры изданий фонда ===\n";
+// Вывод ключевого показателя каждого издания (полиморфизм)
+void ScientificLibrary::showKeyIndicators() const {
+    std::cout << "\n=== Ключевые показатели изданий фонда ===\n";
     for (const auto& item : items) {
         std::cout << "--- " << item->getType() << " ---\n"
             << "Название: " << item->getTitle() << "\n"
-            << item->getValueName() << ": " << item->calculateSpecificValue() << "\n";
+            << item->getKeyIndicatorName() << ": " << item->getKeyIndicator() << "\n";
     }
 }
 
-// Поиск издания с наибольшим значением специфического параметра
-void ScientificLibrary::findMostValuable() const {
+// Поиск издания с наибольшим ключевым показателем
+void ScientificLibrary::findMaxKeyIndicator() const {
     if (items.empty()) {
         std::cout << "Каталог пуст.\n";
         return;
     }
-    
-    auto best = *std::max_element(items.begin(), items.end(), [](const auto& a, const auto& b) {
+    const auto& best = *std::max_element(items.begin(), items.end(), [](const auto& a, const auto& b) {
         return *a < *b;
-    });
-
-    std::cout << "\nИздание с наибольшим профильным показателем:\n"
+        });
+    std::cout << "\nИздание с наибольшим ключевым показателем:\n"
         << "Тип: " << best->getType() << "\n"
         << "Название: " << best->getTitle() << "\n"
-        << best->getValueName() << ": " << best->calculateSpecificValue() << "\n";
+        << best->getKeyIndicatorName() << ": " << best->getKeyIndicator() << "\n";
 }
 
 void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
@@ -101,7 +99,7 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
         throw std::runtime_error("Такое издание уже есть в библиотеке!");
     }
     items.push_back(pub);
-    pub->setLibraryRef(std::shared_ptr<ScientificLibrary>(this, [](ScientificLibrary*) {}));
+    pub->setLibraryRef(weak_from_this());   // библиотека должна быть создана через make_shared
     std::cout << "Добавлено в фонд: " << pub->getTitle() << "\n";
     return *this;
 }
