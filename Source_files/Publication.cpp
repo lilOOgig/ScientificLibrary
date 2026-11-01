@@ -13,6 +13,12 @@ void Publication::printInformation(std::ostream& os) const {
     os << "[" << getType() << "] \"" << title << "\" — " << author << " (" << year << " г.)";
 }
 
+void Publication::readFrom(std::istream& is) {
+    readTitle(is);
+    readAuthor(is);
+    readYear(is);
+}
+
 std::string_view Publication::getTitle() const { return title; }
 std::string_view Publication::getAuthor() const { return author; }
 int Publication::getYear() const { return year; }
@@ -66,9 +72,7 @@ std::ostream& operator<<(std::ostream& os, const Publication& pub) {
 }
 
 std::istream& operator>>(std::istream& is, Publication& pub) {
-    pub.readTitle(is);
-    pub.readAuthor(is);
-    pub.readYear(is);
+    pub.readFrom(is);
     return is;
 }
 
