@@ -1,39 +1,49 @@
 #include "Article.h"
-#include <iostream>
 
 Article::Article(std::string_view t, std::string_view a, int y, std::string_view jName, int issue, std::weak_ptr<ScientificLibrary> lib)
     : Publication(t, a, y, lib), journalName(jName), issueNumber(issue) {
 }
 
+std::string_view Article::getJournalName() const { return journalName; }
+void Article::setJournalName(std::string_view name) { journalName = name; }
+void Article::printJournalName(std::ostream& os) const { os << "Журнал: " << journalName; }
+void Article::readJournalName(std::istream& is) { setJournalName(readLine(is, "Введите название журнала: ")); }
+
+int Article::getIssueNumber() const { return issueNumber; }
+void Article::setIssueNumber(int issue) {
+    if (issue <= 0) throw std::invalid_argument("Ошибка: номер выпуска должен быть положительным!");
+    issueNumber = issue;
+}
+void Article::printIssueNumber(std::ostream& os) const { os << "Выпуск №" << issueNumber; }
+void Article::readIssueNumber(std::istream& is) { setIssueNumber(readInt(is, "Введите номер выпуска: ")); }
+
+void Article::moveToIssue(int newIssue) { setIssueNumber(newIssue); }
+
 std::string_view Article::getType() const { return "Статья"; }
 
 void Article::printInformation(std::ostream& os) const {
-    os << "[Статья] \"" << title << "\" — " << author << " (" << year << " г.) | Журнал: " << journalName << " №" << issueNumber;
+    Publication::printInformation(os);
+    os << " | ";
+    printJournalName(os);
+    os << " | ";
+    printIssueNumber(os);
 }
 
-double Article::calculateSpecificValue() const { return static_cast<double>(issueNumber); }
+double Article::getKeyIndicator() const { return static_cast<double>(issueNumber); }
+std::string Article::getKeyIndicatorName() const { return "Номер выпуска"; }
 
-void Article::applyEffect(int value) {
+void Article::updateKeyIndicator(int value) {
     issueNumber += value;
     std::cout << "У статьи \"" << title << "\" обновлен номер выпуска. Новый номер: " << issueNumber << "\n";
 }
 
-void Article::readFrom(std::istream& is) {
-    std::cout << "Введите название статьи: ";
-    std::getline(is >> std::ws, title);
-    std::cout << "Введите автора: ";
-    std::getline(is, author);
-    std::cout << "Введите год издания: ";
-    int y; is >> y; setYear(y);
-    std::cout << "Введите название журнала: ";
-    std::getline(is >> std::ws, journalName);
-    std::cout << "Введите номер выпуска: ";
-    is >> issueNumber;
-}
-
 bool Article::equals(const Publication& other) const {
     const auto* a = dynamic_cast<const Article*>(&other);
-    return a && title == a->title && author == a->author && year == a->year && journalName == a->journalName && issueNumber == a->issueNumber;
+    return a && hasSameCommonData(*a) && journalName == a->journalName && issueNumber == a->issueNumber;
 }
 
-std::string Article::getValueName() const { return "Номер выпуска"; }
+void Article::readFrom(std::istream& is) {
+    Publication::readFrom(is);
+    readJournalName(is);
+    readIssueNumber(is);
+}
