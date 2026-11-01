@@ -4,7 +4,9 @@
 #include <sstream>
 #include <vector>
 #include <limits>
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 #include "ScientificLibrary.h"
 #include "Publication.h"
@@ -32,14 +34,60 @@ int readNumber(std::string_view prompt) {
     }
 }
 
+// Вызов уникальных методов производных классов (у каждого типа они свои)
+void demonstrateUniqueMethods(const ScientificLibrary& lib) {
+    int value = readNumber("Введите число (страницы / допечатка тиража / новый номер выпуска): ");
+    std::cout << "\n=== Специальные операции по типам изданий ===\n";
+    for (const auto& item : lib.getItems()) {
+        if (auto book = std::dynamic_pointer_cast<Book>(item)) {
+            book->addPages(value);
+            std::cout << "Книга \"" << book->getTitle() << "\": добавлено страниц " << value << ". ";
+            book->printPageCount(std::cout);
+            std::cout << "\n";
+        }
+        else if (auto mono = std::dynamic_pointer_cast<Monograph>(item)) {
+            mono->increaseCirculation(value);
+            std::cout << "Монография \"" << mono->getTitle() << "\": допечатано " << value << " экз. ";
+            mono->printCirculation(std::cout);
+            std::cout << " | ";
+            mono->printIsbn(std::cout);
+            std::cout << "\n";
+        }
+        else if (auto article = std::dynamic_pointer_cast<Article>(item)) {
+            article->moveToIssue(value);
+            std::cout << "Статья \"" << article->getTitle() << "\": перенесена. ";
+            article->printIssueNumber(std::cout);
+            std::cout << " | ";
+            article->printJournalName(std::cout);
+            std::cout << "\n";
+        }
+        else if (auto journal = std::dynamic_pointer_cast<Journal>(item)) {
+            journal->nextVolume();
+            std::cout << "Журнал \"" << journal->getTitle() << "\": переход на следующий том. ";
+            journal->printVolumeNumber(std::cout);
+            std::cout << " | ";
+            journal->printPublisher(std::cout);
+            std::cout << "\n";
+        }
+        else if (auto conf = std::dynamic_pointer_cast<Conference>(item)) {
+            std::cout << "Конференция: доклад \"" << conf->getTitle() << "\" сделан " << conf->getAge() << " г. назад. ";
+            conf->printConferenceName(std::cout);
+            std::cout << " | ";
+            conf->printLocation(std::cout);
+            std::cout << "\n";
+        }
+    }
+}
+
 int main() {
     std::setlocale(LC_ALL, "Russian");
+#ifdef _WIN32
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
+#endif
 
     auto lib = std::make_shared<ScientificLibrary>("Научная Библиотека ВУЗа", 50);
 
-    // Инициализация библиотеки объектами разных типов
     *lib += std::make_shared<Book>("Квантовая механика", "Ландау Л.Д.", 1989, 450, lib);
     *lib += std::make_shared<Article>("Теория алгоритмов", "Кормен Т.", 2013, "Вестник ИТ", 4, lib);
     *lib += std::make_shared<Monograph>("Нейросети и обработка данных", "Иванов А.А.", 2023, "978-5-4461-1234-5", 1000, lib);
@@ -50,13 +98,14 @@ int main() {
     while (userChoice != 0) {
         std::cout << "\n=== СИСТЕМА УПРАВЛЕНИЯ НАУЧНОЙ БИБЛИОТЕКОЙ ===\n"
             << "1. Показать весь каталог библиотеки\n"
-            << "2. Изменить параметры всех изданий (добавить страниц/тираж)\n"
-            << "3. Показать специфические характеристики изданий (страницы, тираж, тома)\n"
-            << "4. Найти главное издание фонда (по максимальному профильному показателю)\n"
+            << "2. Изменить ключевой показатель всех изданий (страницы/тираж/том/выпуск)\n"
+            << "3. Показать ключевые показатели изданий\n"
+            << "4. Найти издание с наибольшим ключевым показателем\n"
             << "5. Выдать издание читателю\n"
             << "6. Вернуть издание в библиотеку\n"
             << "7. Найти публикации по автору\n"
             << "8. Добавить новое издание в фонд\n"
+            << "9. Выполнить уникальные операции классов (и вывести уникальные поля по отдельности)\n"
             << "0. Выход из программы\n";
 
         userChoice = readNumber("Выберите действие: ");
@@ -68,15 +117,18 @@ int main() {
                 break;
             case 2: {
                 int val = readNumber("Введите число для изменения параметров изданий: ");
-                lib->applyMassEffect(val);
+                lib->updateAllKeyIndicators(val);
                 std::cout << "Параметры успешно обновлены для всех объектов!\n";
                 break;
             }
             case 3:
-                lib->showSpecificValues();
+                lib->showKeyIndicators();
                 break;
             case 4:
-                lib->findMostValuable();
+                lib->findMaxKeyIndicator();
+                break;
+            case 9:
+                demonstrateUniqueMethods(*lib);
                 break;
             case 5:
                 lib->issuePublication("Квантовая механика", "д-р Сидоров");
@@ -118,6 +170,5 @@ int main() {
             std::cout << "\n[ОШИБКА]: " << e.what() << "\n";
         }
     }
-
     return 0;
 }
