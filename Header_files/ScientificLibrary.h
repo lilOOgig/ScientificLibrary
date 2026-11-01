@@ -7,7 +7,7 @@
 #include <algorithm>
 #include "Publication.h"
 
-class ScientificLibrary {
+class ScientificLibrary : public std::enable_shared_from_this<ScientificLibrary> {
 private:
     std::string name;
     size_t maxCapacity;
@@ -22,10 +22,10 @@ public:
     void showCatalog() const;
     void searchByAuthor(std::string_view authorName) const;
 
-    // Полиморфные вызовы
-    void applyMassEffect(int value);
-    void showSpecificValues() const;
-    void findMostValuable() const;
+    // Полиморфные операции над коллекцией
+    void updateAllKeyIndicators(int value);   // изменить ключевой показатель у всех изданий
+    void showKeyIndicators() const;           // показать ключевой показатель каждого издания
+    void findMaxKeyIndicator() const;         // издание с наибольшим ключевым показателем
 
     const std::vector<std::shared_ptr<Publication>>& getItems() const { return items; }
 
