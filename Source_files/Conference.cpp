@@ -26,13 +26,6 @@ void Conference::printInformation(std::ostream& os) const {
     printLocation(os);
 }
 
-double Conference::getKeyIndicator() const { return static_cast<double>(getAge()); }
-std::string Conference::getKeyIndicatorName() const { return "Давность доклада (лет)"; }
-
-void Conference::updateKeyIndicator(int value) {
-    std::cout << "Для материалов конференции \"" << title << "\" учтено дополнительных ссылок: " << value << "\n";
-}
-
 bool Conference::equals(const Publication& other) const {
     const auto* c = dynamic_cast<const Conference*>(&other);
     return c && hasSameCommonData(*c) && conferenceName == c->conferenceName;
@@ -43,3 +36,6 @@ void Conference::readFrom(std::istream& is) {
     readConferenceName(is);
     readLocation(is);
 }
+
+int Conference::getLoanPeriod() const { return getAge() > 5 ? 10 : 5; }
+int Conference::getAllowedExtension(int requestedDays) const { return limitDays(requestedDays, getLoanPeriod()); }
