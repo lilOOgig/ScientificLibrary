@@ -4,6 +4,8 @@
 #include <string_view>
 #include <memory>
 #include <stdexcept>
+#include <algorithm>
+#include <compare>
 
 class ScientificLibrary;
 
@@ -47,27 +49,31 @@ public:
     void readAuthor(std::istream& is);
     void readYear(std::istream& is);
 
-    friend std::ostream& operator<<(std::ostream& os, const Publication& pub);
-    friend std::istream& operator>>(std::istream& is, Publication& pub);   // вызывает readFrom
+    // Операторы ввода и вывода (дружественные, определены внутри класса)
+    friend std::ostream& operator<<(std::ostream& os, const Publication& pub) {
+        pub.printInformation(os);
+        return os << " | Статус: " << (pub.isBorrowed ? "Выдана" : "В наличии");
+    }
+    friend std::istream& operator>>(std::istream& is, Publication& pub) {
+        pub.readFrom(is);   // виртуальный вызов
+        return is;
+    }
 
-    // Сравнение изданий по сроку выдачи
-    bool operator<(const Publication& other) const;
-    bool operator>(const Publication& other) const;
-    bool operator<=(const Publication& other) const;
-    bool operator>=(const Publication& other) const;
+    // Сравнение изданий по сроку выдачи (<, >, <=, >= выводятся из <=>)
+    std::strong_ordering operator<=>(const Publication& other) const;
     bool operator==(const Publication& other) const;
-    bool operator!=(const Publication& other) const;
 
 protected:
-    static int limitDays(int days, int limit) { return days < 0 ? 0 : (days > limit ? limit : days); }
+    static int limitDays(int days, int limit) { return std::clamp(days, 0, limit); }
     bool hasSameCommonData(const Publication& other) const;
 
     static int readInt(std::istream& is, std::string_view prompt);
     static std::string readLine(std::istream& is, std::string_view prompt);
 
+private:
     std::string title;
     std::string author;
     int year;
-    bool isBorrowed;
+    bool isBorrowed = false;
     std::weak_ptr<ScientificLibrary> libraryRef;
 };
