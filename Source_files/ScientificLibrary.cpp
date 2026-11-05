@@ -16,7 +16,7 @@ bool ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_
                 throw std::runtime_error("Ошибка: Издание уже выдано!");
             }
             item->setBorrowed(true);
-            std::cout << "Издание \"" << pubTitle << "\" выдано читателю " << userName << ".\n";
+            std::cout << "Издание \"" << pubTitle << "\" выдано читателю " << userName << " на " << item->getLoanPeriod() << " дн.\n";
             return true;
         }
     }
@@ -48,25 +48,33 @@ void ScientificLibrary::showCatalog() const {
     }
 }
 
-// Массовое действие над всей коллекцией (полиморфизм)
-void ScientificLibrary::updateAllKeyIndicators(int value) {
-    for (auto& item : items) {
-        item->updateKeyIndicator(value);
+// Продление срока выдачи: допустимое число дней зависит от фактического типа издания
+void ScientificLibrary::extendAllLoans(int days) const {
+    std::cout << "\n=== Продление срока выдачи на " << days << " дн. ===\n";
+    for (const auto& item : items) {
+        int granted = item->getAllowedExtension(days);
+        std::cout << item->getType() << " \"" << item->getTitle() << "\": ";
+        if (granted == 0) {
+            std::cout << "продление недоступно, срок " << item->getLoanPeriod() << " дн.\n";
+        }
+        else {
+            std::cout << "продлено на " << granted << " дн., новый срок " << item->getLoanPeriod() + granted << " дн.\n";
+        }
     }
 }
 
-// Вывод ключевого показателя каждого издания (полиморфизм)
-void ScientificLibrary::showKeyIndicators() const {
-    std::cout << "\n=== Ключевые показатели изданий фонда ===\n";
+// Срок выдачи каждого издания (полиморфизм)
+void ScientificLibrary::showLoanPeriods() const {
+    std::cout << "\n=== Сроки выдачи изданий фонда ===\n";
     for (const auto& item : items) {
         std::cout << "--- " << item->getType() << " ---\n"
             << "Название: " << item->getTitle() << "\n"
-            << item->getKeyIndicatorName() << ": " << item->getKeyIndicator() << "\n";
+            << "Срок выдачи (дней): " << item->getLoanPeriod() << "\n";
     }
 }
 
-// Поиск издания с наибольшим ключевым показателем
-void ScientificLibrary::findMaxKeyIndicator() const {
+// Издание с наибольшим сроком выдачи (сравнение через operator<)
+void ScientificLibrary::findLongestLoan() const {
     if (items.empty()) {
         std::cout << "Каталог пуст.\n";
         return;
@@ -74,10 +82,10 @@ void ScientificLibrary::findMaxKeyIndicator() const {
     const auto& best = *std::max_element(items.begin(), items.end(), [](const auto& a, const auto& b) {
         return *a < *b;
         });
-    std::cout << "\nИздание с наибольшим ключевым показателем:\n"
+    std::cout << "\nИздание с наибольшим сроком выдачи:\n"
         << "Тип: " << best->getType() << "\n"
         << "Название: " << best->getTitle() << "\n"
-        << best->getKeyIndicatorName() << ": " << best->getKeyIndicator() << "\n";
+        << "Срок выдачи (дней): " << best->getLoanPeriod() << "\n";
 }
 
 void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
