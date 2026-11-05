@@ -23,9 +23,9 @@ public:
     void searchByAuthor(std::string_view authorName) const;
 
     // Полиморфные операции над коллекцией
-    void updateAllKeyIndicators(int value);   // изменить ключевой показатель у всех изданий
-    void showKeyIndicators() const;           // показать ключевой показатель каждого издания
-    void findMaxKeyIndicator() const;         // издание с наибольшим ключевым показателем
+    void extendAllLoans(int days) const;      // запросить продление срока выдачи для всех изданий
+    void showLoanPeriods() const;             // показать срок выдачи каждого издания
+    void findLongestLoan() const;             // издание с наибольшим сроком выдачи
 
     const std::vector<std::shared_ptr<Publication>>& getItems() const { return items; }
 
