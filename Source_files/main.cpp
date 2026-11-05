@@ -34,48 +34,57 @@ int readNumber(std::string_view prompt) {
     }
 }
 
-// Вызов уникальных методов производных классов (у каждого типа они свои)
-void demonstrateUniqueMethods(const ScientificLibrary& lib) {
-    int value = readNumber("Введите число (страницы / допечатка тиража / новый номер выпуска): ");
-    std::cout << "\n=== Специальные операции по типам изданий ===\n";
+// Демонстрация динамического полиморфизма: вызовы через указатель и ссылку на базовый класс
+void demonstratePolymorphism(const ScientificLibrary& lib) {
+    std::cout << "\n=== Полиморфные вызовы ===\n";
     for (const auto& item : lib.getItems()) {
+        const std::shared_ptr<Publication>& ptr = item;   // указатель на базовый класс
+        const Publication& ref = *item;                   // ссылка на базовый класс
+
+        std::cout << "Тип: " << ptr->getType() << "\n";
+        std::cout << "Информация: ";
+        ref.printInformation(std::cout);
+        std::cout << "\n";
+        std::cout << "Срок выдачи: " << ptr->getLoanPeriod() << " дн., максимум продления: "
+            << ptr->getAllowedExtension(30) << " дн.\n\n";
+    }
+}
+
+// Унаследованные поля (из Publication), собственные поля и уникальные методы каждого класса
+void demonstrateUniqueMethods(const ScientificLibrary& lib) {
+    std::cout << "\n=== Унаследованные и уникальные свойства классов ===\n";
+    for (const auto& item : lib.getItems()) {
+        std::cout << "--- " << item->getType() << " ---\n";
+
+        // Унаследованные поля: один и тот же код для любого типа
+        std::cout << "Унаследованные: ";
+        item->printTitle(std::cout);  std::cout << " | ";
+        item->printAuthor(std::cout); std::cout << " | ";
+        item->printYear(std::cout);   std::cout << "\n";
+
+        // Собственные поля и уникальные методы: нужен конкретный класс
+        std::cout << "Собственные: ";
         if (auto book = std::dynamic_pointer_cast<Book>(item)) {
-            book->addPages(value);
-            std::cout << "Книга \"" << book->getTitle() << "\": добавлено страниц " << value << ". ";
             book->printPageCount(std::cout);
-            std::cout << "\n";
+            std::cout << "\nУникальный метод: при 30 стр. в день читать " << book->getReadingDays(30) << " дн.\n";
         }
         else if (auto mono = std::dynamic_pointer_cast<Monograph>(item)) {
-            mono->increaseCirculation(value);
-            std::cout << "Монография \"" << mono->getTitle() << "\": допечатано " << value << " экз. ";
-            mono->printCirculation(std::cout);
-            std::cout << " | ";
-            mono->printIsbn(std::cout);
-            std::cout << "\n";
+            mono->printIsbn(std::cout); std::cout << " | "; mono->printCirculation(std::cout);
+            std::cout << "\nУникальный метод: ограниченный тираж - " << (mono->isLimitedEdition() ? "да" : "нет") << "\n";
         }
         else if (auto article = std::dynamic_pointer_cast<Article>(item)) {
-            article->moveToIssue(value);
-            std::cout << "Статья \"" << article->getTitle() << "\": перенесена. ";
-            article->printIssueNumber(std::cout);
-            std::cout << " | ";
-            article->printJournalName(std::cout);
-            std::cout << "\n";
+            article->printJournalName(std::cout); std::cout << " | "; article->printIssueNumber(std::cout);
+            std::cout << "\nУникальный метод: ссылка - " << article->getCitation() << "\n";
         }
         else if (auto journal = std::dynamic_pointer_cast<Journal>(item)) {
-            journal->nextVolume();
-            std::cout << "Журнал \"" << journal->getTitle() << "\": переход на следующий том. ";
-            journal->printVolumeNumber(std::cout);
-            std::cout << " | ";
-            journal->printPublisher(std::cout);
-            std::cout << "\n";
+            journal->printVolumeNumber(std::cout); std::cout << " | "; journal->printPublisher(std::cout);
+            std::cout << "\nУникальный метод: свежий выпуск - " << (journal->isCurrent() ? "да" : "нет") << "\n";
         }
         else if (auto conf = std::dynamic_pointer_cast<Conference>(item)) {
-            std::cout << "Конференция: доклад \"" << conf->getTitle() << "\" сделан " << conf->getAge() << " г. назад. ";
-            conf->printConferenceName(std::cout);
-            std::cout << " | ";
-            conf->printLocation(std::cout);
-            std::cout << "\n";
+            conf->printConferenceName(std::cout); std::cout << " | "; conf->printLocation(std::cout);
+            std::cout << "\nУникальный метод: доклад сделан " << conf->getAge() << " г. назад\n";
         }
+        std::cout << "\n";
     }
 }
 
@@ -98,14 +107,15 @@ int main() {
     while (userChoice != 0) {
         std::cout << "\n=== СИСТЕМА УПРАВЛЕНИЯ НАУЧНОЙ БИБЛИОТЕКОЙ ===\n"
             << "1. Показать весь каталог библиотеки\n"
-            << "2. Изменить ключевой показатель всех изданий (страницы/тираж/том/выпуск)\n"
-            << "3. Показать ключевые показатели изданий\n"
-            << "4. Найти издание с наибольшим ключевым показателем\n"
+            << "2. Запросить продление срока выдачи для всех изданий\n"
+            << "3. Показать сроки выдачи изданий\n"
+            << "4. Найти издание с наибольшим сроком выдачи\n"
             << "5. Выдать издание читателю\n"
             << "6. Вернуть издание в библиотеку\n"
             << "7. Найти публикации по автору\n"
             << "8. Добавить новое издание в фонд\n"
-            << "9. Выполнить уникальные операции классов (и вывести уникальные поля по отдельности)\n"
+            << "9. Показать унаследованные и уникальные свойства классов\n"
+            << "10. Показать полиморфные вызовы (тип, вывод, срок выдачи)\n"
             << "0. Выход из программы\n";
 
         userChoice = readNumber("Выберите действие: ");
@@ -116,19 +126,21 @@ int main() {
                 lib->showCatalog();
                 break;
             case 2: {
-                int val = readNumber("Введите число для изменения параметров изданий: ");
-                lib->updateAllKeyIndicators(val);
-                std::cout << "Параметры успешно обновлены для всех объектов!\n";
+                int days = readNumber("На сколько дней продлить срок выдачи: ");
+                lib->extendAllLoans(days);
                 break;
             }
             case 3:
-                lib->showKeyIndicators();
+                lib->showLoanPeriods();
                 break;
             case 4:
-                lib->findMaxKeyIndicator();
+                lib->findLongestLoan();
                 break;
             case 9:
                 demonstrateUniqueMethods(*lib);
+                break;
+            case 10:
+                demonstratePolymorphism(*lib);
                 break;
             case 5:
                 lib->issuePublication("Квантовая механика", "д-р Сидоров");
