@@ -14,7 +14,7 @@ void Conference::setLocation(std::string_view loc) { location = loc; }
 void Conference::printLocation(std::ostream& os) const { os << "Место: " << location; }
 void Conference::readLocation(std::istream& is) { setLocation(readLine(is, "Введите место проведения: ")); }
 
-int Conference::getAge(int currentYear) const { return currentYear - year; }
+int Conference::getAge(int currentYear) const { return currentYear - getYear(); }
 
 std::string_view Conference::getType() const { return "Конференция"; }
 
