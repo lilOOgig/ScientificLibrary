@@ -17,8 +17,6 @@ void Journal::setPublisher(std::string_view pub) { publisher = pub; }
 void Journal::printPublisher(std::ostream& os) const { os << "Издательство: " << publisher; }
 void Journal::readPublisher(std::istream& is) { setPublisher(readLine(is, "Введите издательство: ")); }
 
-void Journal::nextVolume() { ++volumeNumber; }
-
 std::string_view Journal::getType() const { return "Журнал"; }
 
 void Journal::printInformation(std::ostream& os) const {
@@ -27,14 +25,6 @@ void Journal::printInformation(std::ostream& os) const {
     printVolumeNumber(os);
     os << " | ";
     printPublisher(os);
-}
-
-double Journal::getKeyIndicator() const { return static_cast<double>(volumeNumber); }
-std::string Journal::getKeyIndicatorName() const { return "Номер тома"; }
-
-void Journal::updateKeyIndicator(int value) {
-    volumeNumber += value;
-    std::cout << "Номер тома журнала \"" << title << "\" изменен на: " << volumeNumber << "\n";
 }
 
 bool Journal::equals(const Publication& other) const {
@@ -47,3 +37,8 @@ void Journal::readFrom(std::istream& is) {
     readVolumeNumber(is);
     readPublisher(is);
 }
+
+int Journal::getLoanPeriod() const { return isCurrent() ? 1 : 3; }
+int Journal::getAllowedExtension(int requestedDays) const { return isCurrent() ? 0 : limitDays(requestedDays, 2); }
+
+bool Journal::isCurrent() const { return year >= CURRENT_YEAR - 1; }
