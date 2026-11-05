@@ -76,9 +76,9 @@ std::istream& operator>>(std::istream& is, Publication& pub) {
     return is;
 }
 
-bool Publication::operator<(const Publication& other) const { return getKeyIndicator() < other.getKeyIndicator(); }
-bool Publication::operator>(const Publication& other) const { return getKeyIndicator() > other.getKeyIndicator(); }
-bool Publication::operator<=(const Publication& other) const { return getKeyIndicator() <= other.getKeyIndicator(); }
-bool Publication::operator>=(const Publication& other) const { return getKeyIndicator() >= other.getKeyIndicator(); }
+bool Publication::operator<(const Publication& other) const { return getLoanPeriod() < other.getLoanPeriod(); }
+bool Publication::operator>(const Publication& other) const { return getLoanPeriod() > other.getLoanPeriod(); }
+bool Publication::operator<=(const Publication& other) const { return getLoanPeriod() <= other.getLoanPeriod(); }
+bool Publication::operator>=(const Publication& other) const { return getLoanPeriod() >= other.getLoanPeriod(); }
 bool Publication::operator==(const Publication& other) const { return equals(other); }
 bool Publication::operator!=(const Publication& other) const { return !(*this == other); }
