@@ -41,4 +41,4 @@ void Journal::readFrom(std::istream& is) {
 int Journal::getLoanPeriod() const { return isCurrent() ? 1 : 3; }
 int Journal::getAllowedExtension(int requestedDays) const { return isCurrent() ? 0 : limitDays(requestedDays, 2); }
 
-bool Journal::isCurrent() const { return year >= CURRENT_YEAR - 1; }
+bool Journal::isCurrent() const { return getYear() >= CURRENT_YEAR - 1; }
