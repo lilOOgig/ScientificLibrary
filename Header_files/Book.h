@@ -5,7 +5,7 @@ class Book : public Publication {
 private:
     int pageCount;
 public:
-    Book(std::string_view t = "", std::string_view a = "", int y = 2000, int pages = 100, std::weak_ptr<ScientificLibrary> lib = {});
+    explicit Book(std::string_view t = "", std::string_view a = "", int y = 2000, int pages = 100, std::weak_ptr<ScientificLibrary> lib = {});
 
     // Уникальное поле: количество страниц - доступ, вывод и ввод отдельно
     int getPageCount() const;
