@@ -9,32 +9,32 @@ void ScientificLibrary::addPublication(const std::shared_ptr<Publication>& pub) 
     *this += pub;
 }
 
-bool ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_view userName) {
-    for (auto& item : items) {
+bool ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_view userName) const {
+    for (const auto& item : items) {
         if (item->getTitle() == pubTitle) {
             if (item->getIsBorrowed()) {
-                throw std::runtime_error("Ошибка: Издание уже выдано!");
+                throw PublicationAlreadyIssuedError("Ошибка: Издание уже выдано!");
             }
             item->setBorrowed(true);
             std::cout << "Издание \"" << pubTitle << "\" выдано читателю " << userName << " на " << item->getLoanPeriod() << " дн.\n";
             return true;
         }
     }
-    throw std::runtime_error("Ошибка: Издание не найдено!");
+    throw PublicationNotFoundError("Ошибка: Издание не найдено!");
 }
 
-void ScientificLibrary::returnPublication(std::string_view pubTitle) {
-    for (auto& item : items) {
+void ScientificLibrary::returnPublication(std::string_view pubTitle) const {
+    for (const auto& item : items) {
         if (item->getTitle() == pubTitle) {
             if (!item->getIsBorrowed()) {
-                throw std::runtime_error("Ошибка: Экземпляр уже на полке!");
+                throw PublicationAlreadyOnShelfError("Ошибка: Экземпляр уже на полке!");
             }
             item->setBorrowed(false);
             std::cout << "Экземпляр \"" << pubTitle << "\" возвращен.\n";
             return;
         }
     }
-    throw std::runtime_error("Ошибка: Издание не найдено в каталоге!");
+    throw PublicationNotFoundError("Ошибка: Издание не найдено в каталоге!");
 }
 
 void ScientificLibrary::showCatalog() const {
@@ -56,8 +56,7 @@ void ScientificLibrary::extendAllLoans(int days) const {
         std::cout << item->getType() << " \"" << item->getTitle() << "\": ";
         if (granted == 0) {
             std::cout << "продление недоступно, срок " << item->getLoanPeriod() << " дн.\n";
-        }
-        else {
+        } else {
             std::cout << "продлено на " << granted << " дн., новый срок " << item->getLoanPeriod() + granted << " дн.\n";
         }
     }
@@ -81,7 +80,7 @@ void ScientificLibrary::findLongestLoan() const {
     }
     const auto& best = *std::max_element(items.begin(), items.end(), [](const auto& a, const auto& b) {
         return *a < *b;
-        });
+    });
     std::cout << "\nИздание с наибольшим сроком выдачи:\n"
         << "Тип: " << best->getType() << "\n"
         << "Название: " << best->getTitle() << "\n"
@@ -102,9 +101,9 @@ void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
 
 ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publication>& pub) {
     if (!pub) return *this;
-    if (items.size() >= maxCapacity) throw std::runtime_error("Лимит фонда исчерпан!");
+    if (items.size() >= maxCapacity) throw LibraryFullError("Лимит фонда исчерпан!");
     if (std::any_of(items.begin(), items.end(), [&pub](const auto& item) { return *item == *pub; })) {
-        throw std::runtime_error("Такое издание уже есть в библиотеке!");
+        throw DuplicatePublicationError("Такое издание уже есть в библиотеке!");
     }
     items.push_back(pub);
     pub->setLibraryRef(weak_from_this());   // библиотека должна быть создана через make_shared
@@ -114,11 +113,10 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
 
 ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publication>& pub) {
     if (!pub) return *this;
-    auto it = std::find_if(items.begin(), items.end(), [&pub](const auto& item) { return *item == *pub; });
-    if (it != items.end()) {
+    if (auto it = std::find_if(items.begin(), items.end(), [&pub](const auto& item) { return *item == *pub; }); it != items.end()) {
         std::cout << "Удалено из фонда: " << (*it)->getTitle() << "\n";
         items.erase(it);
         return *this;
     }
-    throw std::runtime_error("Издание для удаления не найдено!");
+    throw PublicationNotFoundError("Издание для удаления не найдено!");
 }
