@@ -6,7 +6,7 @@ private:
     std::string conferenceName;
     std::string location;
 public:
-    Conference(std::string_view t = "", std::string_view a = "", int y = 2024, std::string_view confName = "ИТ-Форум", std::string_view loc = "Москва", std::weak_ptr<ScientificLibrary> lib = {});
+    explicit Conference(std::string_view t = "", std::string_view a = "", int y = 2024, std::string_view confName = "ИТ-Форум", std::string_view loc = "Москва", std::weak_ptr<ScientificLibrary> lib = {});
 
     // Уникальное поле: название конференции
     std::string_view getConferenceName() const;
