@@ -5,7 +5,7 @@
 #include <vector>
 #include <limits>
 #ifdef _WIN32
-#include <windows.h>
+#include <Windows.h>
 #endif
 
 #include "ScientificLibrary.h"
@@ -26,8 +26,7 @@ int readNumber(std::string_view prompt) {
             std::cin.clear();
             continue;
         }
-        std::stringstream ss(line);
-        if (ss >> val && !(ss >> tail)) {
+        if (std::stringstream ss(line); ss >> val && !(ss >> tail)) {
             return val;
         }
         std::cout << "Неверный ввод! Введите целое число.\n";
@@ -36,13 +35,13 @@ int readNumber(std::string_view prompt) {
 
 // Демонстрация динамического полиморфизма: вызовы через указатель и ссылку на базовый класс
 void demonstratePolymorphism(const ScientificLibrary& lib) {
-    std::cout << "\n=== Полиморфные вызовы ===\n";
+    std::cout << "\n=== Полиморфные вызовы через интерфейс Publication ===\n";
     for (const auto& item : lib.getItems()) {
         const std::shared_ptr<Publication>& ptr = item;   // указатель на базовый класс
         const Publication& ref = *item;                   // ссылка на базовый класс
 
-        std::cout << "Тип: " << ptr->getType() << "\n";
-        std::cout << "Информация: ";
+        std::cout << "Тип (через указатель): " << ptr->getType() << "\n";
+        std::cout << "Информация (через ссылку): ";
         ref.printInformation(std::cout);
         std::cout << "\n";
         std::cout << "Срок выдачи: " << ptr->getLoanPeriod() << " дн., максимум продления: "
