@@ -6,7 +6,7 @@ private:
     std::string journalName;
     int issueNumber;
 public:
-    Article(std::string_view t = "", std::string_view a = "", int y = 2020, std::string_view jName = "Вестник ИТ", int issue = 1, std::weak_ptr<ScientificLibrary> lib = {});
+    explicit Article(std::string_view t = "", std::string_view a = "", int y = 2020, std::string_view jName = "Вестник ИТ", int issue = 1, std::weak_ptr<ScientificLibrary> lib = {});
 
     // Уникальное поле: название журнала
     std::string_view getJournalName() const;
