@@ -6,7 +6,7 @@ private:
     int volumeNumber;
     std::string publisher;
 public:
-    Journal(std::string_view t = "", std::string_view a = "", int y = 2022, int volume = 1, std::string_view pub = "Издательство", std::weak_ptr<ScientificLibrary> lib = {});
+    explicit Journal(std::string_view t = "", std::string_view a = "", int y = 2022, int volume = 1, std::string_view pub = "Издательство", std::weak_ptr<ScientificLibrary> lib = {});
 
     // Уникальное поле: номер тома
     int getVolumeNumber() const;
