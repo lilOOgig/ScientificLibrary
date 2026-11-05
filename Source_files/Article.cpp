@@ -1,4 +1,5 @@
 #include "Article.h"
+#include <format>
 
 Article::Article(std::string_view t, std::string_view a, int y, std::string_view jName, int issue, std::weak_ptr<ScientificLibrary> lib)
     : Publication(t, a, y, lib), journalName(jName), issueNumber(issue) {
@@ -38,9 +39,9 @@ void Article::readFrom(std::istream& is) {
     readIssueNumber(is);
 }
 
-int Article::getLoanPeriod() const { return year >= CURRENT_YEAR - 1 ? 3 : 7; }
-int Article::getAllowedExtension(int requestedDays) const { return year >= CURRENT_YEAR - 1 ? 0 : limitDays(requestedDays, 3); }
+int Article::getLoanPeriod() const { return getYear() >= CURRENT_YEAR - 1 ? 3 : 7; }
+int Article::getAllowedExtension(int requestedDays) const { return getYear() >= CURRENT_YEAR - 1 ? 0 : limitDays(requestedDays, 3); }
 
 std::string Article::getCitation() const {
-    return author + " " + title + " // " + journalName + ". — " + std::to_string(year) + ". — №" + std::to_string(issueNumber) + ".";
+    return std::format("{} {} // {}. — {}. — №{}.", getAuthor(), getTitle(), journalName, getYear(), issueNumber);
 }
