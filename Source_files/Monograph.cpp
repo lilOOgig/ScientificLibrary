@@ -17,11 +17,6 @@ void Monograph::setCirculation(int circ) {
 void Monograph::printCirculation(std::ostream& os) const { os << "Тираж: " << circulation << " экз."; }
 void Monograph::readCirculation(std::istream& is) { setCirculation(readInt(is, "Введите тираж: ")); }
 
-void Monograph::increaseCirculation(int copies) {
-    if (copies <= 0) throw std::invalid_argument("Ошибка: допечатка должна быть положительной!");
-    circulation += copies;
-}
-
 std::string_view Monograph::getType() const { return "Монография"; }
 
 void Monograph::printInformation(std::ostream& os) const {
@@ -30,14 +25,6 @@ void Monograph::printInformation(std::ostream& os) const {
     printIsbn(os);
     os << " | ";
     printCirculation(os);
-}
-
-double Monograph::getKeyIndicator() const { return static_cast<double>(circulation); }
-std::string Monograph::getKeyIndicatorName() const { return "Тираж (экземпляров)"; }
-
-void Monograph::updateKeyIndicator(int value) {
-    circulation += value;
-    std::cout << "Тираж монографии \"" << title << "\" увеличен на " << value << ". Новый тираж: " << circulation << " экз.\n";
 }
 
 bool Monograph::equals(const Publication& other) const {
@@ -50,3 +37,8 @@ void Monograph::readFrom(std::istream& is) {
     readIsbn(is);
     readCirculation(is);
 }
+
+int Monograph::getLoanPeriod() const { return isLimitedEdition() ? 7 : 21; }
+int Monograph::getAllowedExtension(int requestedDays) const { return isLimitedEdition() ? 0 : limitDays(requestedDays, 7); }
+
+bool Monograph::isLimitedEdition() const { return circulation < 500; }
