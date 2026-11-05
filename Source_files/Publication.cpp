@@ -2,7 +2,7 @@
 #include <limits>
 
 Publication::Publication(std::string_view t, std::string_view a, int y, std::weak_ptr<ScientificLibrary> lib)
-    : title(t), author(a), isBorrowed(false), libraryRef(lib) {
+    : title(t), author(a), libraryRef(lib) {
     if (y <= 0) {
         throw std::invalid_argument("Ошибка: Год издания должен быть положительным числом!");
     }
@@ -65,20 +65,5 @@ std::string Publication::readLine(std::istream& is, std::string_view prompt) {
     return s;
 }
 
-std::ostream& operator<<(std::ostream& os, const Publication& pub) {
-    pub.printInformation(os);
-    os << " | Статус: " << (pub.isBorrowed ? "Выдана" : "В наличии");
-    return os;
-}
-
-std::istream& operator>>(std::istream& is, Publication& pub) {
-    pub.readFrom(is);
-    return is;
-}
-
-bool Publication::operator<(const Publication& other) const { return getLoanPeriod() < other.getLoanPeriod(); }
-bool Publication::operator>(const Publication& other) const { return getLoanPeriod() > other.getLoanPeriod(); }
-bool Publication::operator<=(const Publication& other) const { return getLoanPeriod() <= other.getLoanPeriod(); }
-bool Publication::operator>=(const Publication& other) const { return getLoanPeriod() >= other.getLoanPeriod(); }
+std::strong_ordering Publication::operator<=>(const Publication& other) const { return getLoanPeriod() <=> other.getLoanPeriod(); }
 bool Publication::operator==(const Publication& other) const { return equals(other); }
-bool Publication::operator!=(const Publication& other) const { return !(*this == other); }
