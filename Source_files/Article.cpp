@@ -17,8 +17,6 @@ void Article::setIssueNumber(int issue) {
 void Article::printIssueNumber(std::ostream& os) const { os << "Выпуск №" << issueNumber; }
 void Article::readIssueNumber(std::istream& is) { setIssueNumber(readInt(is, "Введите номер выпуска: ")); }
 
-void Article::moveToIssue(int newIssue) { setIssueNumber(newIssue); }
-
 std::string_view Article::getType() const { return "Статья"; }
 
 void Article::printInformation(std::ostream& os) const {
@@ -27,14 +25,6 @@ void Article::printInformation(std::ostream& os) const {
     printJournalName(os);
     os << " | ";
     printIssueNumber(os);
-}
-
-double Article::getKeyIndicator() const { return static_cast<double>(issueNumber); }
-std::string Article::getKeyIndicatorName() const { return "Номер выпуска"; }
-
-void Article::updateKeyIndicator(int value) {
-    issueNumber += value;
-    std::cout << "У статьи \"" << title << "\" обновлен номер выпуска. Новый номер: " << issueNumber << "\n";
 }
 
 bool Article::equals(const Publication& other) const {
@@ -46,4 +36,11 @@ void Article::readFrom(std::istream& is) {
     Publication::readFrom(is);
     readJournalName(is);
     readIssueNumber(is);
+}
+
+int Article::getLoanPeriod() const { return year >= CURRENT_YEAR - 1 ? 3 : 7; }
+int Article::getAllowedExtension(int requestedDays) const { return year >= CURRENT_YEAR - 1 ? 0 : limitDays(requestedDays, 3); }
+
+std::string Article::getCitation() const {
+    return author + " " + title + " // " + journalName + ". — " + std::to_string(year) + ". — №" + std::to_string(issueNumber) + ".";
 }
