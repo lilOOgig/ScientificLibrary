@@ -6,7 +6,7 @@ private:
     std::string isbn;
     int circulation;
 public:
-    Monograph(std::string_view t = "", std::string_view a = "", int y = 2023, std::string_view isbnVal = "000-0", int circ = 500, std::weak_ptr<ScientificLibrary> lib = {});
+    explicit Monograph(std::string_view t = "", std::string_view a = "", int y = 2023, std::string_view isbnVal = "000-0", int circ = 500, std::weak_ptr<ScientificLibrary> lib = {});
 
     // Уникальное поле: ISBN
     std::string_view getIsbn() const;
