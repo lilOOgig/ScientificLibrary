@@ -4,9 +4,9 @@
 #include <algorithm>
 #include <numeric>
 #include <iostream>
-#include "Collection.h"
+#include "Сollection.h"
 
-// Шаблонная функция: поиск элемента с максимальной метрикой (например, по сроку выдачи)
+// Шаблонная функция: поиск элемента с максимальным сроком выдачи (метрикой)
 template <typename T>
 std::shared_ptr<T> maxByMetric(const Collection<T>& collection) {
     std::shared_ptr<T> best = nullptr;
@@ -19,7 +19,7 @@ std::shared_ptr<T> maxByMetric(const Collection<T>& collection) {
     return best;
 }
 
-// Шаблонная функция: расчет среднего значения метрики по коллекции
+// Шаблонная функция: расчет среднего значения срока выдачи по коллекции
 template <typename T>
 double averageMetric(const Collection<T>& collection) {
     if (collection.size() == 0) return 0.0;
@@ -35,7 +35,7 @@ double averageMetric(const Collection<T>& collection) {
     return (count > 0) ? sum / count : 0.0;
 }
 
-// Шаблонная функция: сортировка элементов по компаратору
+// Шаблонная функция: сортировка элементов коллекции через современный std::ranges::sort (C++20)
 template <typename T, typename Comparator>
 std::vector<std::shared_ptr<T>> sortBy(const Collection<T>& collection, Comparator comp) {
     std::vector<std::shared_ptr<T>> result;
@@ -43,11 +43,13 @@ std::vector<std::shared_ptr<T>> sortBy(const Collection<T>& collection, Comparat
         if(item) result.push_back(item);
     }
 
-    std::sort(
-        result.begin(), result.end(),
+    // Использование std::ranges::sort вместо передачи begin/end итераторов
+    std::ranges::sort(
+        result,
         [&comp](const std::shared_ptr<T>& a, const std::shared_ptr<T>& b) {
             return comp(*a, *b);
         }
     );
+    
     return result;
 }
