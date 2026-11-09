@@ -3,7 +3,7 @@
 
 class Conference : public Publication {
 private:
-    std::string conferenceName;
+    std::string Name;
     std::string location;
 public:
     explicit Conference(std::string_view t = "", std::string_view a = "", int y = 2024, std::string_view confName = "ИТ-Форум", std::string_view loc = "Москва", std::weak_ptr<ScientificLibrary> lib = {});
