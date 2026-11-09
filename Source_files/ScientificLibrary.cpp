@@ -43,12 +43,12 @@ void ScientificLibrary::showCatalog() const {
         std::cout << "Каталог пуст.\n";
         return;
     }
-    for (size_t i = 0; i < items.size(); ++i) {
-        std::cout << i + 1 << ". " << *items[i] << std::endl;
+    size_t idx = 1;
+    for (const auto& item : items) {
+        std::cout << idx++ << ". " << *item << std::endl;
     }
 }
 
-// Продление срока выдачи: допустимое число дней зависит от фактического типа издания
 void ScientificLibrary::extendAllLoans(int days) const {
     std::cout << "\n=== Продление срока выдачи на " << days << " дн. ===\n";
     for (const auto& item : items) {
@@ -62,7 +62,6 @@ void ScientificLibrary::extendAllLoans(int days) const {
     }
 }
 
-// Срок выдачи каждого издания (полиморфизм)
 void ScientificLibrary::showLoanPeriods() const {
     std::cout << "\n=== Сроки выдачи изданий фонда ===\n";
     for (const auto& item : items) {
@@ -72,7 +71,6 @@ void ScientificLibrary::showLoanPeriods() const {
     }
 }
 
-// Издание с наибольшим сроком выдачи (сравнение через operator<)
 void ScientificLibrary::findLongestLoan() const {
     if (items.empty()) {
         std::cout << "Каталог пуст.\n";
@@ -105,17 +103,20 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
     if (std::any_of(items.begin(), items.end(), [&pub](const auto& item) { return *item == *pub; })) {
         throw DuplicatePublicationError("Такое издание уже есть в библиотеке!");
     }
-    items.push_back(pub);
-    pub->setLibraryRef(weak_from_this());   // библиотека должна быть создана через make_shared
+    items.add(pub); // Используем метод add нашего шаблонного класса Collection
+    pub->setLibraryRef(weak_from_this());   
     std::cout << "Добавлено в фонд: " << pub->getTitle() << "\n";
     return *this;
 }
 
 ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publication>& pub) {
     if (!pub) return *this;
-    if (auto it = std::find_if(items.begin(), items.end(), [&pub](const auto& item) { return *item == *pub; }); it != items.end()) {
-        std::cout << "Удалено из фонда: " << (*it)->getTitle() << "\n";
-        items.erase(it);
+    // Используем removeIf из Collection для удаления по условию равенства
+    size_t removedCount = items.removeIf([&pub](const Publication& item) {
+        return item == *pub;
+    });
+    if (removedCount > 0) {
+        std::cout << "Удалено из фонда: " << pub->getTitle() << "\n";
         return *this;
     }
     throw PublicationNotFoundError("Издание для удаления не найдено!");
