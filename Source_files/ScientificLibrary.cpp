@@ -1,5 +1,6 @@
 #include "ScientificLibrary.h"
 #include <algorithm>
+#include <ranges> // Требуется для std::ranges
 
 ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
     : name(libName), maxCapacity(capacity) {
@@ -76,7 +77,8 @@ void ScientificLibrary::findLongestLoan() const {
         std::cout << "Каталог пуст.\n";
         return;
     }
-    const auto& best = *std::max_element(items.begin(), items.end(), [](const auto& a, const auto& b) {
+    // Заменено на современный std::ranges::max_element (C++20)
+    const auto& best = *std::ranges::max_element(items, [](const auto& a, const auto& b) {
         return *a < *b;
     });
     std::cout << "\nИздание с наибольшим сроком выдачи:\n"
@@ -100,9 +102,12 @@ void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
 ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publication>& pub) {
     if (!pub) return *this;
     if (items.size() >= maxCapacity) throw LibraryFullError("Лимит фонда исчерпан!");
-    if (std::any_of(items.begin(), items.end(), [&pub](const auto& item) { return *item == *pub; })) {
+    
+    // Заменено на современный std::ranges::any_of (C++20)
+    if (std::ranges::any_of(items, [&pub](const auto& item) { return *item == *pub; })) {
         throw DuplicatePublicationError("Такое издание уже есть в библиотеке!");
     }
+    
     items.add(pub);
     pub->setLibraryRef(weak_from_this());   
     std::cout << "Добавлено в фонд: " << pub->getTitle() << "\n";
@@ -111,7 +116,6 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
 
 ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publication>& pub) {
     if (!pub) return *this;
-    // Исправлено: C++17 init-statement для переменной removedCount внутри if
     if (size_t removedCount = items.removeIf([&pub](const Publication& item) { return item == *pub; }); removedCount > 0) {
         std::cout << "Удалено из фонда: " << pub->getTitle() << "\n";
         return *this;
