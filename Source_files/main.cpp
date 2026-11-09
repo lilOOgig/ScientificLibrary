@@ -15,7 +15,7 @@
 #include "Monograph.h"
 #include "Journal.h"
 #include "Conference.h"
-#include "algs.h"
+#include "Algs.h"
 
 int readNumber(std::string_view prompt) {
     std::string line;
