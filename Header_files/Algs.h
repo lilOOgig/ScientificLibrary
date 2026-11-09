@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <numeric>
 #include <iostream>
-#include "collection.h"
+#include "Collection.h"
 
 // Шаблонная функция: поиск элемента с максимальной метрикой (например, по сроку выдачи)
 template <typename T>
