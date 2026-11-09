@@ -103,7 +103,7 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
     if (std::any_of(items.begin(), items.end(), [&pub](const auto& item) { return *item == *pub; })) {
         throw DuplicatePublicationError("Такое издание уже есть в библиотеке!");
     }
-    items.add(pub); // Используем метод add нашего шаблонного класса Collection
+    items.add(pub);
     pub->setLibraryRef(weak_from_this());   
     std::cout << "Добавлено в фонд: " << pub->getTitle() << "\n";
     return *this;
@@ -111,11 +111,8 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
 
 ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publication>& pub) {
     if (!pub) return *this;
-    // Используем removeIf из Collection для удаления по условию равенства
-    size_t removedCount = items.removeIf([&pub](const Publication& item) {
-        return item == *pub;
-    });
-    if (removedCount > 0) {
+    // Исправлено: C++17 init-statement для переменной removedCount внутри if
+    if (size_t removedCount = items.removeIf([&pub](const Publication& item) { return item == *pub; }); removedCount > 0) {
         std::cout << "Удалено из фонда: " << pub->getTitle() << "\n";
         return *this;
     }
