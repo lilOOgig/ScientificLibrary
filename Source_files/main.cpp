@@ -15,7 +15,7 @@
 #include "Monograph.h"
 #include "Journal.h"
 #include "Conference.h"
-#include "algs.h" // Подключаем наши шаблонные алгоритмы обработки
+#include "Algs.h" // Подключаем наши шаблонные алгоритмы обработки
 
 int readNumber(std::string_view prompt) {
     std::string line;
