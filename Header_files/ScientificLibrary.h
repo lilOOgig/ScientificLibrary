@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include "Publication.h"
-#include "collection.h"
+#include "Сollection.h"
 
 class LibraryError : public std::runtime_error {
 public:
