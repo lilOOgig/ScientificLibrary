@@ -1,6 +1,6 @@
 #include "ScientificLibrary.h"
 #include <algorithm>
-#include <ranges> // Требуется для std::ranges
+#include <ranges>
 
 ScientificLibrary::ScientificLibrary(std::string_view libName, size_t capacity)
     : name(libName), maxCapacity(capacity) {
@@ -18,7 +18,7 @@ bool ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_
             }
             item->setBorrowed(true);
             std::cout << "Издание \"" << pubTitle << "\" выдано читателю " << userName << " на " << item->getLoanPeriod() << " дн.\n";
-            return true;
+            return true; // Штатный возврат true
         }
     }
     throw PublicationNotFoundError("Ошибка: Издание не найдено!");
@@ -32,7 +32,7 @@ void ScientificLibrary::returnPublication(std::string_view pubTitle) const {
             }
             item->setBorrowed(false);
             std::cout << "Экземпляр \"" << pubTitle << "\" возвращен.\n";
-            return;
+            return; // Штатный возврат void
         }
     }
     throw PublicationNotFoundError("Ошибка: Издание не найдено в каталоге!");
@@ -77,7 +77,6 @@ void ScientificLibrary::findLongestLoan() const {
         std::cout << "Каталог пуст.\n";
         return;
     }
-    // Заменено на современный std::ranges::max_element (C++20)
     const auto& best = *std::ranges::max_element(items, [](const auto& a, const auto& b) {
         return *a < *b;
     });
@@ -103,7 +102,6 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
     if (!pub) return *this;
     if (items.size() >= maxCapacity) throw LibraryFullError("Лимит фонда исчерпан!");
     
-    // Заменено на современный std::ranges::any_of (C++20)
     if (std::ranges::any_of(items, [&pub](const auto& item) { return *item == *pub; })) {
         throw DuplicatePublicationError("Такое издание уже есть в библиотеке!");
     }
