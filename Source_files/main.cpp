@@ -15,7 +15,7 @@
 #include "Monograph.h"
 #include "Journal.h"
 #include "Conference.h"
-#include "Algs.h" // Подключаем наши шаблонные алгоритмы обработки
+#include "Algs.h"
 
 int readNumber(std::string_view prompt) {
     std::string line;
@@ -84,15 +84,13 @@ void demonstrateUniqueMethods(const ScientificLibrary& lib) {
     }
 }
 
-// Новая демонстрация шаблонных алгоритмов из файла algs.h и методов Collection
 void demonstrateTemplatesAndAlgorithms(const ScientificLibrary& lib) {
     std::cout << "\n=== ДЕМОНСТРАЦИЯ ШАБЛОНОВ И АЛГОРИТМОВ (Лабораторная работа №5) ===\n";
     
     const auto& collection = lib.getItems();
 
-    // 1. Использование шаблонной функции maxByMetric
-    auto maxPub = maxByMetric(collection);
-    if (maxPub) {
+    // 1. Использование шаблонной функции maxByMetric (исправлено: C++17 init-statement)
+    if (auto maxPub = maxByMetric(collection); maxPub) {
         std::cout << "[Шаблонная функция maxByMetric]: Найдено издание с максимальной метрикой срока выдачи -> " 
                   << maxPub->getType() << " \"" << maxPub->getTitle() << "\" (" << maxPub->getLoanPeriod() << " дн.)\n";
     }
@@ -101,7 +99,7 @@ void demonstrateTemplatesAndAlgorithms(const ScientificLibrary& lib) {
     double avgLoan = averageMetric(collection);
     std::cout << "[Шаблонная функция averageMetric]: Средний срок выдачи по коллекции = " << avgLoan << " дн.\n";
 
-    // 3. Использование шаблонной функции sortBy (сортировка по году издания)
+    // 3. Использование шаблонной функции sortBy
     auto sortedByYear = sortBy(collection, [](const Publication& a, const Publication& b) {
         return a.getYear() < b.getYear();
     });
@@ -147,7 +145,7 @@ int main() {
             << "8. Добавить новое издание в фонд\n"
             << "9. Показать унаследованные и уникальные свойства классов\n"
             << "10. Показать полиморфные вызовы (тип, вывод, срок выдачи)\n"
-            << "11. Демонстрация шаблонов и алгоритмов (Лаб №5)\n" // Новый пункт меню для проверки лабы
+            << "11. Демонстрация шаблонов и алгоритмов (Лаб №5)\n"
             << "0. Выход из программы\n";
 
         userChoice = readNumber("Выберите действие: ");
@@ -175,7 +173,7 @@ int main() {
                 demonstratePolymorphism(*lib);
                 break;
             case 11:
-                demonstrateTemplatesAndAlgorithms(*lib); // Запуск демонстрации шаблонов
+                demonstrateTemplatesAndAlgorithms(*lib);
                 break;
             case 5:
                 lib->issuePublication("Квантовая механика", "д-р Сидоров");
