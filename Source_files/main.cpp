@@ -15,6 +15,7 @@
 #include "Monograph.h"
 #include "Journal.h"
 #include "Conference.h"
+#include "algs.h" // Подключаем наши шаблонные алгоритмы обработки
 
 int readNumber(std::string_view prompt) {
     std::string line;
@@ -33,12 +34,11 @@ int readNumber(std::string_view prompt) {
     }
 }
 
-// Демонстрация динамического полиморфизма: вызовы через указатель и ссылку на базовый класс
 void demonstratePolymorphism(const ScientificLibrary& lib) {
     std::cout << "\n=== Полиморфные вызовы через интерфейс Publication ===\n";
     for (const auto& item : lib.getItems()) {
-        const std::shared_ptr<Publication>& ptr = item;   // указатель на базовый класс
-        const Publication& ref = *item;                   // ссылка на базовый класс
+        const std::shared_ptr<Publication>& ptr = item;   
+        const Publication& ref = *item;                   
 
         std::cout << "Тип (через указатель): " << ptr->getType() << "\n";
         std::cout << "Информация (через ссылку): ";
@@ -49,19 +49,16 @@ void demonstratePolymorphism(const ScientificLibrary& lib) {
     }
 }
 
-// Унаследованные поля (из Publication), собственные поля и уникальные методы каждого класса
 void demonstrateUniqueMethods(const ScientificLibrary& lib) {
     std::cout << "\n=== Унаследованные и уникальные свойства классов ===\n";
     for (const auto& item : lib.getItems()) {
         std::cout << "--- " << item->getType() << " ---\n";
 
-        // Унаследованные поля: один и тот же код для любого типа
         std::cout << "Унаследованные: ";
         item->printTitle(std::cout);  std::cout << " | ";
         item->printAuthor(std::cout); std::cout << " | ";
         item->printYear(std::cout);   std::cout << "\n";
 
-        // Собственные поля и уникальные методы: нужен конкретный класс
         std::cout << "Собственные: ";
         if (auto book = std::dynamic_pointer_cast<Book>(item)) {
             book->printPageCount(std::cout);
@@ -85,6 +82,41 @@ void demonstrateUniqueMethods(const ScientificLibrary& lib) {
         }
         std::cout << "\n";
     }
+}
+
+// Новая демонстрация шаблонных алгоритмов из файла algs.h и методов Collection
+void demonstrateTemplatesAndAlgorithms(const ScientificLibrary& lib) {
+    std::cout << "\n=== ДЕМОНСТРАЦИЯ ШАБЛОНОВ И АЛГОРИТМОВ (Лабораторная работа №5) ===\n";
+    
+    const auto& collection = lib.getItems();
+
+    // 1. Использование шаблонной функции maxByMetric
+    auto maxPub = maxByMetric(collection);
+    if (maxPub) {
+        std::cout << "[Шаблонная функция maxByMetric]: Найдено издание с максимальной метрикой срока выдачи -> " 
+                  << maxPub->getType() << " \"" << maxPub->getTitle() << "\" (" << maxPub->getLoanPeriod() << " дн.)\n";
+    }
+
+    // 2. Использование шаблонной функции averageMetric
+    double avgLoan = averageMetric(collection);
+    std::cout << "[Шаблонная функция averageMetric]: Средний срок выдачи по коллекции = " << avgLoan << " дн.\n";
+
+    // 3. Использование шаблонной функции sortBy (сортировка по году издания)
+    auto sortedByYear = sortBy(collection, [](const Publication& a, const Publication& b) {
+        return a.getYear() < b.getYear();
+    });
+    std::cout << "[Шаблонная функция sortBy]: Отсортировано по году издания:\n";
+    for (const auto& item : sortedByYear) {
+        std::cout << " - " << item->getYear() << " г. | " << item->getTitle() << "\n";
+    }
+
+    // 4. Демонстрация метода Collection::findAll с лямбда-предикатом
+    auto modernPubs = collection.findAll([](const Publication& p) {
+        return p.getYear() >= 2022;
+    });
+    std::cout << "[Метод Collection::findAll]: Издания 2022 года и новее (всего " << modernPubs.size() << "):\n";
+    modernPubs.print(std::cout);
+    std::cout << "=================================================================\n";
 }
 
 int main() {
@@ -115,6 +147,7 @@ int main() {
             << "8. Добавить новое издание в фонд\n"
             << "9. Показать унаследованные и уникальные свойства классов\n"
             << "10. Показать полиморфные вызовы (тип, вывод, срок выдачи)\n"
+            << "11. Демонстрация шаблонов и алгоритмов (Лаб №5)\n" // Новый пункт меню для проверки лабы
             << "0. Выход из программы\n";
 
         userChoice = readNumber("Выберите действие: ");
@@ -140,6 +173,9 @@ int main() {
                 break;
             case 10:
                 demonstratePolymorphism(*lib);
+                break;
+            case 11:
+                demonstrateTemplatesAndAlgorithms(*lib); // Запуск демонстрации шаблонов
                 break;
             case 5:
                 lib->issuePublication("Квантовая механика", "д-р Сидоров");
