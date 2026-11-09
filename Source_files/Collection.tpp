@@ -1,5 +1,5 @@
 #pragma once
-#include "collection.h"
+#include "Collection.h"
 
 template <typename T>
 const std::vector<std::shared_ptr<T>>& Collection<T>::getItems() const {
