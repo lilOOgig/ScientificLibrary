@@ -1,7 +1,8 @@
 #include "Journal.h"
 
 Journal::Journal(std::string_view t, std::string_view a, int y, int volume, std::string_view pub, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), volumeNumber(volume), publisher(pub) {
+    : Publication(t, a, y, lib), publisher(pub) {
+    setVolumeNumber(volume);
 }
 
 int Journal::getVolumeNumber() const { return volumeNumber; }
