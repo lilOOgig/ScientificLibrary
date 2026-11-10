@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <memory>
 #include <vector>
-#include "Collection.h"
+#include "Collect.h"
 
 // Элемент с наибольшим значением метрики. metric(const T&) возвращает любое сравнимое значение.
 template <typename T, typename Metric>
