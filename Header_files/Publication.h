@@ -1,11 +1,11 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <string_view>
-#include <memory>
-#include <stdexcept>
 #include <algorithm>
 #include <compare>
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <string_view>
 
 class ScientificLibrary;
 
@@ -17,16 +17,12 @@ public:
 
     static constexpr int CURRENT_YEAR = 2026;
 
-    // Чисто виртуальные методы: у каждого типа издания своя реализация
-    virtual std::string_view getType() const = 0;               // тип издания
-    virtual int getLoanPeriod() const = 0;                      // срок выдачи в днях (зависит от типа)
-    virtual int getAllowedExtension(int requestedDays) const = 0; // на сколько дней можно продлить (зависит от типа)
+    virtual std::string_view getType() const = 0;
+    virtual int getLoanPeriod() const = 0;                        // срок выдачи в днях
+    virtual int getAllowedExtension(int requestedDays) const = 0; // на сколько дней можно продлить
     virtual bool equals(const Publication& other) const = 0;
 
-    // Виртуальный метод с реализацией: общая часть, наследники дополняют своими полями
     virtual void printInformation(std::ostream& os) const;
-
-    // Виртуальный метод ввода: база читает общие поля, наследники добавляют свои
     virtual void readFrom(std::istream& is);
 
     std::string_view getTitle() const;
@@ -41,7 +37,6 @@ public:
     void setBorrowed(bool status);
     void setLibraryRef(std::weak_ptr<ScientificLibrary> lib);
 
-    // Вывод и ввод каждого общего поля отдельно
     void printTitle(std::ostream& os) const;
     void printAuthor(std::ostream& os) const;
     void printYear(std::ostream& os) const;
@@ -49,17 +44,15 @@ public:
     void readAuthor(std::istream& is);
     void readYear(std::istream& is);
 
-    // Операторы ввода и вывода (дружественные, определены внутри класса)
     friend std::ostream& operator<<(std::ostream& os, const Publication& pub) {
         pub.printInformation(os);
         return os << " | Статус: " << (pub.isBorrowed ? "Выдана" : "В наличии");
     }
     friend std::istream& operator>>(std::istream& is, Publication& pub) {
-        pub.readFrom(is);   // виртуальный вызов
+        pub.readFrom(is);
         return is;
     }
 
-    // Сравнение изданий по сроку выдачи (<, >, <=, >= выводятся из <=>)
     std::strong_ordering operator<=>(const Publication& other) const;
     bool operator==(const Publication& other) const;
 
@@ -73,7 +66,7 @@ protected:
 private:
     std::string title;
     std::string author;
-    int year;
+    int year = 1;
     bool isBorrowed = false;
     std::weak_ptr<ScientificLibrary> libraryRef;
 };
