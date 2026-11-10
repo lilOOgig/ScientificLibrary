@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include "collection.h"
+#include "Collection.h"
 #include "Publication.h"
 
 class LibraryError : public std::runtime_error {
