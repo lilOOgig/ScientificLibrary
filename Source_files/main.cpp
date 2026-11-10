@@ -153,24 +153,24 @@ void demonstrateTemplateFunctions(const ScientificLibrary& lib) {
 
 // ---------- сценарии для пунктов меню (без ввода с клавиатуры) ----------
 
-void issueIfNeeded(ScientificLibrary& lib, std::string_view title, std::string_view reader) {
+void issueIfNeeded(const ScientificLibrary& lib, std::string_view title, std::string_view reader) {
     auto pub = lib.getItems().find([title](const Publication& p) { return p.getTitle() == title; });
     if (pub && !pub->getIsBorrowed()) lib.issuePublication(title, reader);
 }
 
-void scenarioIssue(ScientificLibrary& lib) {
+void scenarioIssue(const ScientificLibrary& lib) {
     section("Выдача издания читателю");
     lib.issuePublication("Квантовая механика", "д-р Сидоров");
     std::cout << "(повторное нажатие покажет ошибку: издание уже выдано)\n";
 }
 
-void scenarioReturn(ScientificLibrary& lib) {
+void scenarioReturn(const ScientificLibrary& lib) {
     section("Возврат издания в библиотеку");
     lib.returnPublication("Квантовая механика");
     std::cout << "(повторное нажатие покажет ошибку: экземпляр уже на полке)\n";
 }
 
-void scenarioExtend(ScientificLibrary& lib) {
+void scenarioExtend(const ScientificLibrary& lib) {
     section("Продление срока для выданных изданий");
     std::cout << "Сначала выдаём несколько изданий разных типов:\n";
     issueIfNeeded(lib, "Квантовая механика", "д-р Сидоров");
