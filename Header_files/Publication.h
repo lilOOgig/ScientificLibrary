@@ -9,6 +9,12 @@
 
 class ScientificLibrary;
 
+// Ввод прерван (например, закончился поток ввода)
+class InputAbortedError : public std::runtime_error {
+public:
+    using std::runtime_error::runtime_error;
+};
+
 // Абстрактный базовый класс иерархии изданий
 class Publication {
 public:
@@ -53,6 +59,8 @@ public:
         return is;
     }
 
+    // <=>, <, >, <=, >= сравнивают издания по сроку выдачи,
+    // а == проверяет, что это одно и то же издание (equals).
     std::strong_ordering operator<=>(const Publication& other) const;
     bool operator==(const Publication& other) const;
 
