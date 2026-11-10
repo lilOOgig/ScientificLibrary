@@ -1,21 +1,25 @@
+#include <clocale>
+#include <format>
 #include <iostream>
 #include <memory>
-#include <string>
 #include <sstream>
+#include <string>
 #include <vector>
-#include <limits>
 #ifdef _WIN32
 #include <Windows.h>
 #endif
 
-#include "ScientificLibrary.h"
-#include "Publication.h"
-#include "Book.h"
-#include "Article.h"
-#include "Monograph.h"
-#include "Journal.h"
-#include "Conference.h"
 #include "Algs.h"
+#include "Article.h"
+#include "Book.h"
+#include "Collection.h"
+#include "Conference.h"
+#include "Journal.h"
+#include "Monograph.h"
+#include "Publication.h"
+#include "ScientificLibrary.h"
+
+// ---------- ввод ----------
 
 int readNumber(std::string_view prompt) {
     std::string line;
@@ -23,34 +27,28 @@ int readNumber(std::string_view prompt) {
     char tail;
     while (true) {
         std::cout << prompt;
-        if (!std::getline(std::cin, line)) {
-            std::cin.clear();
-            continue;
-        }
-        if (std::stringstream ss(line); ss >> val && !(ss >> tail)) {
-            return val;
-        }
+        if (!std::getline(std::cin, line)) return 0;   // конец ввода: выходим из программы
+        if (std::stringstream ss(line); ss >> val && !(ss >> tail)) return val;
         std::cout << "Неверный ввод! Введите целое число.\n";
     }
 }
 
-void demonstratePolymorphism(const ScientificLibrary& lib) {
-    std::cout << "\n=== Полиморфные вызовы через интерфейс Publication ===\n";
-    for (const auto& item : lib.getItems()) {
-        const std::shared_ptr<Publication>& ptr = item;   
-        const Publication& ref = *item;                   
+// ---------- оформление вывода ----------
 
-        std::cout << "Тип (через указатель): " << ptr->getType() << "\n";
-        std::cout << "Информация (через ссылку): ";
-        ref.printInformation(std::cout);
-        std::cout << "\n";
-        std::cout << "Срок выдачи: " << ptr->getLoanPeriod() << " дн., максимум продления: "
-            << ptr->getAllowedExtension(30) << " дн.\n\n";
-    }
+void section(std::string_view title) {
+    std::cout << "\n==================================================\n"
+        << title << "\n"
+        << "==================================================\n";
 }
 
+void step(std::string_view text) {
+    std::cout << "\n>> " << text << "\n";
+}
+
+// ---------- лаб. №4: наследование и полиморфизм ----------
+
 void demonstrateUniqueMethods(const ScientificLibrary& lib) {
-    std::cout << "\n=== Унаследованные и уникальные свойства классов ===\n";
+    section("Унаследованные и уникальные свойства классов");
     for (const auto& item : lib.getItems()) {
         std::cout << "--- " << item->getType() << " ---\n";
 
@@ -84,88 +82,177 @@ void demonstrateUniqueMethods(const ScientificLibrary& lib) {
     }
 }
 
-// 1. Демонстрация базовых операций контейнера (Условие лабы: add, get, removeAt, size, clear, print)
-void demonstrateCollectionBasics() {
-    std::cout << "\n=== [Лаб №5] 1. Базовые операции шаблонного класса Collection<T> ===\n";
-    Collection<Publication> testCol;
-
-    std::cout << "Создана пустая коллекция. Размер: " << testCol.size() << "\n";
-    std::cout << "Содержимое пустой коллекции:\n";
-    testCol.print();
-
-    std::cout << "\nДобавление 2 элементов в коллекцию (add)...\n";
-    testCol.add(std::make_shared<Book>("Чистый код", "Роберт Мартин", 2008, 464));
-    testCol.add(std::make_shared<Article>("Параллельные вычисления", "Алексеев В.", 2021, "Вестник Программирования", 2));
-
-    std::cout << "Размер коллекции после добавления: " << testCol.size() << "\n";
-    std::cout << "Текущее содержимое коллекции (print):\n";
-    testCol.print();
-
-    std::cout << "\nПолучение объекта по индексу [0] (get):\n";
-    if (auto item = testCol.get(0); item) {
-        std::cout << "Найден объект: " << *item << "\n";
+void demonstratePolymorphism(const ScientificLibrary& lib) {
+    section("Полиморфные вызовы через интерфейс Publication");
+    for (const auto& item : lib.getItems()) {
+        const Publication& ref = *item;
+        std::cout << "Тип (через указатель): " << item->getType() << "\n";
+        std::cout << "Информация (через ссылку): ";
+        ref.printInformation(std::cout);
+        std::cout << "\n";
+        std::cout << "Срок выдачи: " << item->getLoanPeriod() << " дн., максимум продления при запросе 30 дн.: "
+            << item->getAllowedExtension(30) << " дн.\n\n";
     }
-
-    std::cout << "\nУдаление объекта по индексу [0] (removeAt)...\n";
-    testCol.removeAt(0);
-    std::cout << "Размер коллекции после удаления: " << testCol.size() << "\n";
-    testCol.print();
-
-    std::cout << "\nОчистка коллекции (clear)...\n";
-    testCol.clear();
-    std::cout << "Размер после clear(): " << testCol.size() << "\n";
-    std::cout << "=================================================================\n";
 }
 
-// 2. Демонстрация шаблонного поиска и удаления по предикату (Условие лабы: find, findAll, removeIf)
-void demonstrateCollectionPredicates(const ScientificLibrary& lib) {
-    std::cout << "\n=== [Лаб №5] 2. Шаблонный поиск и фильтрация по критериям ===\n";
-    const auto& collection = lib.getItems();
+// ---------- лаб. №5: шаблоны ----------
 
-    std::cout << "1. Поиск первого издания автора 'Кормен Т.' (find):\n";
-    if (auto item = collection.find([](const Publication& p) { return p.getAuthor() == "Кормен Т."; }); item) {
-        std::cout << "   Найдено: " << *item << "\n";
-    } else {
-        std::cout << "   Не найдено.\n";
+// Полка изданий одного типа: собирается из фонда, пополняется новым поступлением.
+// Одна и та же функция работает для Book, Article, Journal и любого другого наследника Publication.
+template <typename T>
+void demonstrateShelf(std::string_view label, const Collection<Publication>& fund, const std::shared_ptr<T>& arrival) {
+    std::cout << "\n--- Collection<" << label << "> ---\n";
+    auto shelf = selectByType<T>(fund);
+
+    shelf.add(arrival);
+    std::cout << "Полка после поступления нового издания:\n";
+    shelf.print();
+
+    std::cout << "get(1): " << *shelf.get(1) << "\n";
+    if (auto available = shelf.find([](const T& p) { return !p.getIsBorrowed(); })) {
+        std::cout << "find (первое свободное для выдачи): " << available->getTitle() << "\n";
     }
 
-    std::cout << "\n2. Получение подколлекции изданий от 2022 года и новее (findAll):\n";
-    auto modernPubs = collection.findAll([](const Publication& p) { return p.getYear() >= 2022; });
-    modernPubs.print();
-
-    std::cout << "\n3. Демонстрация группового удаления по критерию (removeIf):\n";
-    Collection<Publication> tempCol = collection; // Создаем копию для теста удаления
-    std::cout << "   Исходный размер временной коллекции: " << tempCol.size() << "\n";
-    size_t removed = tempCol.removeIf([](const Publication& p) { return p.getYear() < 2015; });
-    std::cout << "   Удалено изданий старше 2015 года: " << removed << "\n";
-    std::cout << "   Новый размер коллекции: " << tempCol.size() << "\n";
-    std::cout << "=================================================================\n";
+    shelf.removeAt(0);
+    std::cout << "removeAt(0) (списание с полки), на полке: " << shelf.size() << "\n";
+    shelf.clear();
+    std::cout << "clear(), на полке: " << shelf.size() << "\n";
 }
 
-// 3. Демонстрация шаблонных функций обработки (Условие лабы: не менее 1 шаблонной функции)
+void demonstrateCollectionTemplates(const ScientificLibrary& lib) {
+    section("Лаб №5: шаблонный контейнер Collection<T> в библиотеке");
+    const auto& fund = lib.getItems();
+
+    std::cout << "\nФонд целиком, Collection<Publication>: " << fund.size() << " изд.\n";
+    fund.print();
+
+    demonstrateShelf<Book>("Book", fund, std::make_shared<Book>("Структуры данных", "Седжвик Р.", 2011, 800));
+    demonstrateShelf<Article>("Article", fund, std::make_shared<Article>("Графовые алгоритмы", "Левин М.", 2025, "Вестник ИТ", 1));
+    demonstrateShelf<Journal>("Journal", fund, std::make_shared<Journal>("Вестник МГУ", "Коллектив", 2026, 5, "МГУ"));
+}
+
 void demonstrateTemplateFunctions(const ScientificLibrary& lib) {
-    std::cout << "\n=== [Лаб №5] 3. Шаблонные функции обработки данных (algs.h) ===\n";
-    const auto& collection = lib.getItems();
+    section("Лаб №5: шаблонные функции (Algs.h)");
+    const auto& fund = lib.getItems();
+    auto loanPeriod = [](const Publication& p) { return p.getLoanPeriod(); };
 
-    // 1. maxByMetric
-    if (auto maxPub = maxByMetric(collection); maxPub) {
-        std::cout << "1. [maxByMetric]: Издание с максимальным сроком выдачи -> " 
-                  << maxPub->getType() << " \"" << maxPub->getTitle() << "\" (" << maxPub->getLoanPeriod() << " дн.)\n";
+    if (auto best = maxByMetric(fund, loanPeriod)) {
+        std::cout << "maxByMetric (наибольший срок выдачи): " << best->getType() << " \""
+            << best->getTitle() << "\" — " << best->getLoanPeriod() << " дн.\n";
     }
+    std::cout << std::format("averageMetric (средний срок выдачи, весь фонд): {:.1f} дн.\n", averageMetric(fund, loanPeriod));
+    std::cout << std::format("averageMetric (средний срок выдачи, только книги): {:.1f} дн.\n",
+        averageMetric(selectByType<Book>(fund), [](const Book& b) { return b.getLoanPeriod(); }));
+    std::cout << "selectByType: монографий в фонде — " << selectByType<Monograph>(fund).size() << "\n";
 
-    // 2. averageMetric
-    double avgLoan = averageMetric(collection);
-    std::cout << "2. [averageMetric]: Среднее значение срока выдачи = " << avgLoan << " дн.\n";
-
-    // 3. sortBy (ranges::sort)
-    auto sortedByYear = sortBy(collection, [](const Publication& a, const Publication& b) {
-        return a.getYear() < b.getYear();
-    });
-    std::cout << "3. [sortBy]: Отсортировано по году издания:\n";
-    for (const auto& item : sortedByYear) {
-        std::cout << "   - " << item->getYear() << " г. | " << item->getTitle() << "\n";
+    std::cout << "sortBy (фонд по году издания):\n";
+    for (const auto& p : sortBy(fund, [](const Publication& a, const Publication& b) { return a.getYear() < b.getYear(); })) {
+        std::cout << "   " << p->getYear() << " | " << p->getType() << " | " << p->getTitle() << "\n";
     }
-    std::cout << "=================================================================\n";
+}
+
+// ---------- сценарии для пунктов меню (без ввода с клавиатуры) ----------
+
+void issueIfNeeded(ScientificLibrary& lib, std::string_view title, std::string_view reader) {
+    auto pub = lib.getItems().find([&](const Publication& p) { return p.getTitle() == title; });
+    if (pub && !pub->getIsBorrowed()) lib.issuePublication(title, reader);
+}
+
+void scenarioIssue(ScientificLibrary& lib) {
+    section("Выдача издания читателю");
+    lib.issuePublication("Квантовая механика", "д-р Сидоров");
+    std::cout << "(повторное нажатие покажет ошибку: издание уже выдано)\n";
+}
+
+void scenarioReturn(ScientificLibrary& lib) {
+    section("Возврат издания в библиотеку");
+    lib.returnPublication("Квантовая механика");
+    std::cout << "(повторное нажатие покажет ошибку: экземпляр уже на полке)\n";
+}
+
+void scenarioExtend(ScientificLibrary& lib) {
+    section("Продление срока для выданных изданий");
+    std::cout << "Сначала выдаём несколько изданий разных типов:\n";
+    issueIfNeeded(lib, "Квантовая механика", "д-р Сидоров");
+    issueIfNeeded(lib, "Нейросети и обработка данных", "проф. Волков");
+    issueIfNeeded(lib, "Научный Вестник", "асп. Ермакова");
+    lib.extendAllLoans(10);
+}
+
+void scenarioSearch(const ScientificLibrary& lib) {
+    section("Поиск изданий по автору");
+    lib.searchByAuthor("Кормен Т.");
+    lib.searchByAuthor("Неизвестный А.А.");
+}
+
+void scenarioAdd(const std::shared_ptr<ScientificLibrary>& lib) {
+    section("Добавление издания в фонд");
+    static const std::vector<std::shared_ptr<Publication>> samples = {
+        std::make_shared<Book>("Структуры данных", "Седжвик Р.", 2011, 800),
+        std::make_shared<Article>("Графовые алгоритмы", "Левин М.", 2025, "Вестник ИТ", 1),
+        std::make_shared<Monograph>("Машинное обучение", "Смирнов К.К.", 2020, "978-5-9775-0001-1", 300),
+        std::make_shared<Journal>("Вестник МГУ", "Коллектив", 2026, 5, "МГУ"),
+        std::make_shared<Conference>("Доклад по ПО", "Орлова Н.Н.", 2015, "SoftConf", "Казань")
+    };
+    static size_t next = 0;
+
+    if (next < samples.size()) {
+        *lib += samples[next++];
+    }
+    else {
+        std::cout << "Все заготовленные издания уже добавлены. Пробуем добавить первое ещё раз:\n";
+        *lib += samples[0];   // сработает защита от дубликатов
+    }
+}
+
+void scenarioRemove(const std::shared_ptr<ScientificLibrary>& lib) {
+    section("Списание издания из фонда");
+    auto found = lib->getItems().find([](const Publication& p) { return p.getTitle() == "Доклад по ИИ"; });
+    if (!found) throw PublicationNotFoundError("Издание «Доклад по ИИ» уже списано!");
+    *lib -= found;
+}
+
+// Единственное место, где данные вводятся с клавиатуры (operator>> из лабы №4)
+void addPublicationInteractively(const std::shared_ptr<ScientificLibrary>& lib) {
+    std::cout << "\nТип добавляемого издания:\n"
+        << "1 - Книга\n2 - Статья\n3 - Монография\n4 - Журнал\n5 - Конференция\n";
+    int choice = readNumber("Ваш выбор: ");
+
+    std::shared_ptr<Publication> pub;
+    switch (choice) {
+    case 1: pub = std::make_shared<Book>(); break;
+    case 2: pub = std::make_shared<Article>(); break;
+    case 3: pub = std::make_shared<Monograph>(); break;
+    case 4: pub = std::make_shared<Journal>(); break;
+    case 5: pub = std::make_shared<Conference>(); break;
+    default:
+        std::cout << "Неверный тип издания!\n";
+        return;
+    }
+    std::cin >> *pub;
+    *lib += pub;
+}
+
+void printMenu() {
+    std::cout << "\n=== СИСТЕМА УПРАВЛЕНИЯ НАУЧНОЙ БИБЛИОТЕКОЙ ===\n"
+        << "Работа с фондом:\n"
+        << "  1. Показать каталог\n"
+        << "  2. Выдать издание читателю\n"
+        << "  3. Принять издание обратно\n"
+        << "  4. Продлить срок для выданных изданий\n"
+        << "  5. Показать сроки выдачи\n"
+        << "  6. Найти издание с наибольшим сроком выдачи\n"
+        << "  7. Найти издания по автору\n"
+        << "  8. Добавить издание в фонд\n"
+        << "  9. Списать издание из фонда\n"
+        << "Лабораторная №4 (наследование):\n"
+        << " 10. Унаследованные и уникальные свойства классов\n"
+        << " 11. Полиморфные вызовы\n"
+        << "Лабораторная №5 (шаблоны):\n"
+        << " 12. Collection<T>: фонд и полки по типам изданий\n"
+        << " 13. Шаблонные функции: maxByMetric, averageMetric, sortBy\n"
+        << "Дополнительно:\n"
+        << "  0. Выход\n";
 }
 
 int main() {
@@ -183,92 +270,29 @@ int main() {
     *lib += std::make_shared<Journal>("Научный Вестник", "Коллектив", 2022, 12, "Наука", lib);
     *lib += std::make_shared<Conference>("Доклад по ИИ", "Петров П.П.", 2024, "ИТ-Форум", "Москва", lib);
 
-    int userChoice = -1;
-    while (userChoice != 0) {
-        std::cout << "\n=== СИСТЕМА УПРАВЛЕНИЯ НАУЧНОЙ БИБЛИОТЕКОЙ ===\n"
-            << "1. Показать весь каталог библиотеки\n"
-            << "2. Запросить продление срока выдачи для всех изданий\n"
-            << "3. Показать сроки выдачи изданий\n"
-            << "4. Найти издание с наибольшим сроком выдачи\n"
-            << "5. Выдать издание читателю\n"
-            << "6. Вернуть издание в библиотеку\n"
-            << "7. Найти публикации по автору\n"
-            << "8. Добавить новое издание в фонд\n"
-            << "9. Показать унаследованные и уникальные свойства классов\n"
-            << "10. Показать полиморфные вызовы (тип, вывод, срок выдачи)\n"
-            << "--- Проверка Лабораторной работы №5 (Шаблоны) ---\n"
-            << "11. Лаб №5: Базовые операции контейнера Collection<T> (add, get, remove, clear)\n"
-            << "12. Лаб №5: Шаблонный поиск и фильтрация (find, findAll, removeIf)\n"
-            << "13. Лаб №5: Шаблонные функции обработки данных (maxByMetric, averageMetric, sortBy)\n"
-            << "0. Выход из программы\n";
-
-        userChoice = readNumber("Выберите действие: ");
+    int choice = -1;
+    while (choice != 0) {
+        printMenu();
+        choice = readNumber("Выберите действие: ");
 
         try {
-            switch (userChoice) {
-            case 1:
-                lib->showCatalog();
-                break;
-            case 2: {
-                int days = readNumber("На сколько дней продлить срок выдачи: ");
-                lib->extendAllLoans(days);
-                break;
-            }
-            case 3:
-                lib->showLoanPeriods();
-                break;
-            case 4:
-                lib->findLongestLoan();
-                break;
-            case 9:
-                demonstrateUniqueMethods(*lib);
-                break;
-            case 10:
-                demonstratePolymorphism(*lib);
-                break;
-            case 11:
-                demonstrateCollectionBasics();
-                break;
-            case 12:
-                demonstrateCollectionPredicates(*lib);
-                break;
-            case 13:
-                demonstrateTemplateFunctions(*lib);
-                break;
-            case 5:
-                lib->issuePublication("Квантовая механика", "д-р Сидоров");
-                break;
-            case 6:
-                lib->returnPublication("Квантовая механика");
-                break;
-            case 7:
-                lib->searchByAuthor("Кормен Т.");
-                break;
-            case 8: {
-                std::cout << "\nВыберите тип добавляемого издания:\n"
-                    << "1 - Книга\n"
-                    << "2 - Статья\n"
-                    << "3 - Монография\n"
-                    << "4 - Журнал\n"
-                    << "5 - Конференция\n";
-                int tChoice = readNumber("Ваш выбор: ");
-                std::shared_ptr<Publication> newPub;
-                if (tChoice == 1) newPub = std::make_shared<Book>();
-                else if (tChoice == 2) newPub = std::make_shared<Article>();
-                else if (tChoice == 3) newPub = std::make_shared<Monograph>();
-                else if (tChoice == 4) newPub = std::make_shared<Journal>();
-                else if (tChoice == 5) newPub = std::make_shared<Conference>();
-                else { std::cout << "Неверный тип издания!\n"; break; }
-
-                std::cin >> *newPub;
-                *lib += newPub;
-                break;
-            }
-            case 0:
-                std::cout << "Завершение работы программы.\n";
-                break;
-            default:
-                std::cout << "Ошибка: такого пункта нет в меню. Попробуйте снова.\n";
+            switch (choice) {
+            case 1: lib->showCatalog(); break;
+            case 2: scenarioIssue(*lib); break;
+            case 3: scenarioReturn(*lib); break;
+            case 4: scenarioExtend(*lib); break;
+            case 5: lib->showLoanPeriods(); break;
+            case 6: lib->findLongestLoan(); break;
+            case 7: scenarioSearch(*lib); break;
+            case 8: scenarioAdd(lib); break;
+            case 9: scenarioRemove(lib); break;
+            case 10: demonstrateUniqueMethods(*lib); break;
+            case 11: demonstratePolymorphism(*lib); break;
+            case 12: demonstrateCollectionTemplates(*lib); break;
+            case 13: demonstrateTemplateFunctions(*lib); break;
+            case 14: addPublicationInteractively(lib); break;
+            case 0: std::cout << "Завершение работы программы.\n"; break;
+            default: std::cout << "Такого пункта нет в меню.\n";
             }
         }
         catch (const std::exception& e) {
