@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include "Collection.h"
+#include "collection.h"
 #include "Publication.h"
 
 class LibraryError : public std::runtime_error {
@@ -42,8 +42,8 @@ public:
     ScientificLibrary(std::string_view libName, size_t capacity);
 
     void addPublication(const std::shared_ptr<Publication>& pub);
-    void issuePublication(std::string_view pubTitle, std::string_view userName);
-    void returnPublication(std::string_view pubTitle);
+    void issuePublication(std::string_view pubTitle, std::string_view userName) const;
+    void returnPublication(std::string_view pubTitle) const;
     void showCatalog() const;
     void searchByAuthor(std::string_view authorName) const;
 
