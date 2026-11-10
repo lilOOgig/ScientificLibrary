@@ -12,7 +12,7 @@
 #include "Algs.h"
 #include "Article.h"
 #include "Book.h"
-#include "Collection.h"
+#include "collection.h"
 #include "Conference.h"
 #include "Journal.h"
 #include "Monograph.h"
@@ -37,8 +37,8 @@ int readNumber(std::string_view prompt) {
 
 void section(std::string_view title) {
     std::cout << "\n==================================================\n"
-        << title << "\n"
-        << "==================================================\n";
+              << title << "\n"
+              << "==================================================\n";
 }
 
 void step(std::string_view text) {
@@ -91,7 +91,7 @@ void demonstratePolymorphism(const ScientificLibrary& lib) {
         ref.printInformation(std::cout);
         std::cout << "\n";
         std::cout << "Срок выдачи: " << item->getLoanPeriod() << " дн., максимум продления при запросе 30 дн.: "
-            << item->getAllowedExtension(30) << " дн.\n\n";
+                  << item->getAllowedExtension(30) << " дн.\n\n";
     }
 }
 
@@ -138,11 +138,11 @@ void demonstrateTemplateFunctions(const ScientificLibrary& lib) {
 
     if (auto best = maxByMetric(fund, loanPeriod)) {
         std::cout << "maxByMetric (наибольший срок выдачи): " << best->getType() << " \""
-            << best->getTitle() << "\" — " << best->getLoanPeriod() << " дн.\n";
+                  << best->getTitle() << "\" — " << best->getLoanPeriod() << " дн.\n";
     }
     std::cout << std::format("averageMetric (средний срок выдачи, весь фонд): {:.1f} дн.\n", averageMetric(fund, loanPeriod));
     std::cout << std::format("averageMetric (средний срок выдачи, только книги): {:.1f} дн.\n",
-        averageMetric(selectByType<Book>(fund), [](const Book& b) { return b.getLoanPeriod(); }));
+                             averageMetric(selectByType<Book>(fund), [](const Book& b) { return b.getLoanPeriod(); }));
     std::cout << "selectByType: монографий в фонде — " << selectByType<Monograph>(fund).size() << "\n";
 
     std::cout << "sortBy (фонд по году издания):\n";
@@ -154,7 +154,7 @@ void demonstrateTemplateFunctions(const ScientificLibrary& lib) {
 // ---------- сценарии для пунктов меню (без ввода с клавиатуры) ----------
 
 void issueIfNeeded(ScientificLibrary& lib, std::string_view title, std::string_view reader) {
-    auto pub = lib.getItems().find([&](const Publication& p) { return p.getTitle() == title; });
+    auto pub = lib.getItems().find([title](const Publication& p) { return p.getTitle() == title; });
     if (pub && !pub->getIsBorrowed()) lib.issuePublication(title, reader);
 }
 
@@ -198,8 +198,7 @@ void scenarioAdd(const std::shared_ptr<ScientificLibrary>& lib) {
 
     if (next < samples.size()) {
         *lib += samples[next++];
-    }
-    else {
+    } else {
         std::cout << "Все заготовленные издания уже добавлены. Пробуем добавить первое ещё раз:\n";
         *lib += samples[0];   // сработает защита от дубликатов
     }
@@ -215,7 +214,7 @@ void scenarioRemove(const std::shared_ptr<ScientificLibrary>& lib) {
 // Единственное место, где данные вводятся с клавиатуры (operator>> из лабы №4)
 void addPublicationInteractively(const std::shared_ptr<ScientificLibrary>& lib) {
     std::cout << "\nТип добавляемого издания:\n"
-        << "1 - Книга\n2 - Статья\n3 - Монография\n4 - Журнал\n5 - Конференция\n";
+              << "1 - Книга\n2 - Статья\n3 - Монография\n4 - Журнал\n5 - Конференция\n";
     int choice = readNumber("Ваш выбор: ");
 
     std::shared_ptr<Publication> pub;
@@ -235,24 +234,25 @@ void addPublicationInteractively(const std::shared_ptr<ScientificLibrary>& lib) 
 
 void printMenu() {
     std::cout << "\n=== СИСТЕМА УПРАВЛЕНИЯ НАУЧНОЙ БИБЛИОТЕКОЙ ===\n"
-        << "Работа с фондом:\n"
-        << "  1. Показать каталог\n"
-        << "  2. Выдать издание читателю\n"
-        << "  3. Принять издание обратно\n"
-        << "  4. Продлить срок для выданных изданий\n"
-        << "  5. Показать сроки выдачи\n"
-        << "  6. Найти издание с наибольшим сроком выдачи\n"
-        << "  7. Найти издания по автору\n"
-        << "  8. Добавить издание в фонд\n"
-        << "  9. Списать издание из фонда\n"
-        << "Лабораторная №4 (наследование):\n"
-        << " 10. Унаследованные и уникальные свойства классов\n"
-        << " 11. Полиморфные вызовы\n"
-        << "Лабораторная №5 (шаблоны):\n"
-        << " 12. Collection<T>: фонд и полки по типам изданий\n"
-        << " 13. Шаблонные функции: maxByMetric, averageMetric, sortBy\n"
-        << "Дополнительно:\n"
-        << "  0. Выход\n";
+              << "Работа с фондом:\n"
+              << "  1. Показать каталог\n"
+              << "  2. Выдать издание читателю\n"
+              << "  3. Принять издание обратно\n"
+              << "  4. Продлить срок для выданных изданий\n"
+              << "  5. Показать сроки выдачи\n"
+              << "  6. Найти издание с наибольшим сроком выдачи\n"
+              << "  7. Найти издания по автору\n"
+              << "  8. Добавить издание в фонд\n"
+              << "  9. Списать издание из фонда\n"
+              << "Лабораторная №4 (наследование):\n"
+              << " 10. Унаследованные и уникальные свойства классов\n"
+              << " 11. Полиморфные вызовы\n"
+              << "Лабораторная №5 (шаблоны):\n"
+              << " 12. Collection<T>: фонд и полки по типам изданий\n"
+              << " 13. Шаблонные функции: maxByMetric, averageMetric, sortBy\n"
+              << "Дополнительно:\n"
+              << " 14. Добавить издание вручную (ввод с клавиатуры)\n"
+              << "  0. Выход\n";
 }
 
 int main() {
