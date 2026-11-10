@@ -1,12 +1,11 @@
 #pragma once
+#include <iostream>
+#include <memory>
+#include <stdexcept>
 #include <string>
 #include <string_view>
-#include <memory>
-#include <iostream>
-#include <algorithm>
-#include <stdexcept>
+#include "Collection.h"
 #include "Publication.h"
-#include "Сollection.h"
 
 class LibraryError : public std::runtime_error {
 public:
@@ -37,20 +36,20 @@ class ScientificLibrary : public std::enable_shared_from_this<ScientificLibrary>
 private:
     std::string name;
     size_t maxCapacity;
-    Collection<Publication> items; // Заменили std::vector на шаблонный контейнер Collection
+    Collection<Publication> items;
 
 public:
     ScientificLibrary(std::string_view libName, size_t capacity);
 
     void addPublication(const std::shared_ptr<Publication>& pub);
-    bool issuePublication(std::string_view pubTitle, std::string_view userName) const;
-    void returnPublication(std::string_view pubTitle) const;
+    void issuePublication(std::string_view pubTitle, std::string_view userName);
+    void returnPublication(std::string_view pubTitle);
     void showCatalog() const;
     void searchByAuthor(std::string_view authorName) const;
 
-    void extendAllLoans(int days) const;      
-    void showLoanPeriods() const;             
-    void findLongestLoan() const;             
+    void extendAllLoans(int days) const;
+    void showLoanPeriods() const;
+    void findLongestLoan() const;
 
     const Collection<Publication>& getItems() const { return items; }
 
