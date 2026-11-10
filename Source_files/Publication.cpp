@@ -1,12 +1,17 @@
 #include "Publication.h"
 #include <limits>
 
+namespace {
+    bool isBlank(std::string_view s) {
+        return s.find_first_not_of(" \t\r\n") == std::string_view::npos;
+    }
+}
+
+// Пустые название и автор допускаются только у объекта по умолчанию,
+// который потом заполняется через operator>>; сеттеры пустые значения не пропускают.
 Publication::Publication(std::string_view t, std::string_view a, int y, std::weak_ptr<ScientificLibrary> lib)
     : title(t), author(a), libraryRef(lib) {
-    if (y <= 0) {
-        throw std::invalid_argument("Ошибка: Год издания должен быть положительным числом!");
-    }
-    year = y;
+    setYear(y);
 }
 
 void Publication::printInformation(std::ostream& os) const {
@@ -25,10 +30,18 @@ int Publication::getYear() const { return year; }
 bool Publication::getIsBorrowed() const { return isBorrowed; }
 std::weak_ptr<ScientificLibrary> Publication::getLibraryRef() const { return libraryRef; }
 
-void Publication::setTitle(std::string_view t) { title = t; }
-void Publication::setAuthor(std::string_view a) { author = a; }
+void Publication::setTitle(std::string_view t) {
+    if (isBlank(t)) throw std::invalid_argument("Ошибка: название не может быть пустым!");
+    title = t;
+}
+void Publication::setAuthor(std::string_view a) {
+    if (isBlank(a)) throw std::invalid_argument("Ошибка: автор не может быть пустым!");
+    author = a;
+}
 void Publication::setYear(int y) {
-    if (y <= 0) throw std::invalid_argument("Ошибка: Некорректный год!");
+    if (y <= 0 || y > CURRENT_YEAR) {
+        throw std::invalid_argument("Ошибка: год издания должен быть от 1 до " + std::to_string(CURRENT_YEAR) + "!");
+    }
     year = y;
 }
 void Publication::setBorrowed(bool status) { isBorrowed = status; }
@@ -61,7 +74,7 @@ int Publication::readInt(std::istream& is, std::string_view prompt) {
 std::string Publication::readLine(std::istream& is, std::string_view prompt) {
     std::cout << prompt;
     std::string s;
-    std::getline(is, s);
+    if (!std::getline(is, s)) throw std::runtime_error("Ошибка: ввод прерван!");
     return s;
 }
 
