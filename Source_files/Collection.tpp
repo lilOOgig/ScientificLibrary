@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <format>
 #include <stdexcept>
 
 template <typename T>
@@ -10,7 +11,7 @@ void Collection<T>::add(const std::shared_ptr<T>& item) {
 
 template <typename T>
 void Collection<T>::removeAt(size_t index) {
-    if (index >= items.size()) throw std::out_of_range("Индекс " + std::to_string(index) + " за пределами коллекции (размер " + std::to_string(items.size()) + ")!");
+    if (index >= items.size()) throw std::out_of_range(std::format("Индекс {} за пределами коллекции (размер {})!", index, items.size()));
     items.erase(items.begin() + index);
 }
 
@@ -22,7 +23,7 @@ size_t Collection<T>::removeIf(Predicate pred) {
 
 template <typename T>
 std::shared_ptr<T> Collection<T>::get(size_t index) const {
-    if (index >= items.size()) throw std::out_of_range("Индекс " + std::to_string(index) + " за пределами коллекции (размер " + std::to_string(items.size()) + ")!");
+    if (index >= items.size()) throw std::out_of_range(std::format("Индекс {} за пределами коллекции (размер {})!", index, items.size()));
     return items[index];
 }
 
