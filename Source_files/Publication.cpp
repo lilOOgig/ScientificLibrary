@@ -1,10 +1,11 @@
 #include "Publication.h"
+#include <format>
 #include <limits>
 
 namespace {
-    bool isBlank(std::string_view s) {
-        return s.find_first_not_of(" \t\r\n") == std::string_view::npos;
-    }
+bool isBlank(std::string_view s) {
+    return s.find_first_not_of(" \t\r\n") == std::string_view::npos;
+}
 }
 
 // Пустые название и автор допускаются только у объекта по умолчанию,
@@ -40,7 +41,7 @@ void Publication::setAuthor(std::string_view a) {
 }
 void Publication::setYear(int y) {
     if (y <= 0 || y > CURRENT_YEAR) {
-        throw std::invalid_argument("Ошибка: год издания должен быть от 1 до " + std::to_string(CURRENT_YEAR) + "!");
+        throw std::invalid_argument(std::format("Ошибка: год издания должен быть от 1 до {}!", CURRENT_YEAR));
     }
     year = y;
 }
@@ -74,7 +75,7 @@ int Publication::readInt(std::istream& is, std::string_view prompt) {
 std::string Publication::readLine(std::istream& is, std::string_view prompt) {
     std::cout << prompt;
     std::string s;
-    if (!std::getline(is, s)) throw std::runtime_error("Ошибка: ввод прерван!");
+    if (!std::getline(is, s)) throw InputAbortedError("Ошибка: ввод прерван!");
     return s;
 }
 
