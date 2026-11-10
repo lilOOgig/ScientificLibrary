@@ -1,7 +1,8 @@
 #include "Monograph.h"
 
 Monograph::Monograph(std::string_view t, std::string_view a, int y, std::string_view isbnVal, int circ, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), isbn(isbnVal), circulation(circ) {
+    : Publication(t, a, y, lib), isbn(isbnVal) {
+    setCirculation(circ);
 }
 
 std::string_view Monograph::getIsbn() const { return isbn; }
