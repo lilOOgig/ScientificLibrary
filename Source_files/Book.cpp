@@ -2,7 +2,8 @@
 #include <algorithm>
 
 Book::Book(std::string_view t, std::string_view a, int y, int pages, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), pageCount(pages) {
+    : Publication(t, a, y, lib) {
+    setPageCount(pages);
 }
 
 int Book::getPageCount() const { return pageCount; }
