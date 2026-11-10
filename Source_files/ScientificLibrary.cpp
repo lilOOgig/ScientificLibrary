@@ -9,18 +9,18 @@ void ScientificLibrary::addPublication(const std::shared_ptr<Publication>& pub) 
     *this += pub;
 }
 
-void ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_view userName) {
-    auto item = items.find([&](const Publication& p) { return p.getTitle() == pubTitle; });
+void ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_view userName) const {
+    auto item = items.find([pubTitle](const Publication& p) { return p.getTitle() == pubTitle; });
     if (!item) throw PublicationNotFoundError("Ошибка: Издание не найдено!");
     if (item->getIsBorrowed()) throw PublicationAlreadyIssuedError("Ошибка: Издание уже выдано!");
 
     item->setBorrowed(true);
     std::cout << "Издание \"" << pubTitle << "\" выдано читателю " << userName
-        << " на " << item->getLoanPeriod() << " дн.\n";
+              << " на " << item->getLoanPeriod() << " дн.\n";
 }
 
-void ScientificLibrary::returnPublication(std::string_view pubTitle) {
-    auto item = items.find([&](const Publication& p) { return p.getTitle() == pubTitle; });
+void ScientificLibrary::returnPublication(std::string_view pubTitle) const {
+    auto item = items.find([pubTitle](const Publication& p) { return p.getTitle() == pubTitle; });
     if (!item) throw PublicationNotFoundError("Ошибка: Издание не найдено в каталоге!");
     if (!item->getIsBorrowed()) throw PublicationAlreadyOnShelfError("Ошибка: Экземпляр уже на полке!");
 
@@ -55,8 +55,7 @@ void ScientificLibrary::extendAllLoans(int days) const {
         std::cout << item->getType() << " \"" << item->getTitle() << "\": ";
         if (granted == 0) {
             std::cout << "продление недоступно, срок " << item->getLoanPeriod() << " дн.\n";
-        }
-        else {
+        } else {
             std::cout << "продлено на " << granted << " дн., новый срок " << item->getLoanPeriod() + granted << " дн.\n";
         }
     }
@@ -66,7 +65,7 @@ void ScientificLibrary::showLoanPeriods() const {
     std::cout << "\n=== Сроки выдачи изданий фонда ===\n";
     for (const auto& item : items) {
         std::cout << item->getType() << " \"" << item->getTitle() << "\" — "
-            << item->getLoanPeriod() << " дн.\n";
+                  << item->getLoanPeriod() << " дн.\n";
     }
 }
 
@@ -77,13 +76,13 @@ void ScientificLibrary::findLongestLoan() const {
         return;
     }
     std::cout << "\nИздание с наибольшим сроком выдачи:\n"
-        << best->getType() << " \"" << best->getTitle() << "\" — "
-        << best->getLoanPeriod() << " дн.\n";
+              << best->getType() << " \"" << best->getTitle() << "\" — "
+              << best->getLoanPeriod() << " дн.\n";
 }
 
 void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
     std::cout << "\nПоиск автора \"" << authorName << "\":\n";
-    auto found = items.findAll([&](const Publication& p) { return p.getAuthor() == authorName; });
+    auto found = items.findAll([authorName](const Publication& p) { return p.getAuthor() == authorName; });
     if (found.empty()) {
         std::cout << "Ничего не найдено.\n";
         return;
@@ -94,7 +93,7 @@ void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
 ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publication>& pub) {
     if (!pub) throw std::invalid_argument("Ошибка: нельзя добавить пустое издание!");
     if (items.size() >= maxCapacity) throw LibraryFullError("Лимит фонда исчерпан!");
-    if (items.find([&](const Publication& p) { return p == *pub; })) {
+    if (items.find([&pub](const Publication& p) { return p == *pub; })) {
         throw DuplicatePublicationError("Такое издание уже есть в библиотеке!");
     }
 
@@ -107,11 +106,11 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
 ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publication>& pub) {
     if (!pub) throw std::invalid_argument("Ошибка: не указано издание для удаления!");
 
-    auto stored = items.find([&](const Publication& p) { return p == *pub; });
+    auto stored = items.find([&pub](const Publication& p) { return p == *pub; });
     if (!stored) throw PublicationNotFoundError("Издание для удаления не найдено!");
     if (stored->getIsBorrowed()) throw PublicationAlreadyIssuedError("Нельзя списать издание, пока оно на руках у читателя!");
 
-    items.removeIf([&](const Publication& p) { return &p == stored.get(); });
+    items.removeIf([&stored](const Publication& p) { return &p == stored.get(); });
     stored->setLibraryRef({});
     std::cout << "Удалено из фонда: " << stored->getTitle() << "\n";
     return *this;
