@@ -2,7 +2,8 @@
 #include <format>
 
 Article::Article(std::string_view t, std::string_view a, int y, std::string_view jName, int issue, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), journalName(jName), issueNumber(issue) {
+    : Publication(t, a, y, lib), journalName(jName) {
+    setIssueNumber(issue);
 }
 
 std::string_view Article::getJournalName() const { return journalName; }
