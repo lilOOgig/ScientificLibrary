@@ -1,12 +1,6 @@
 #include "Publication.h"
 #include <format>
-#include <limits>
-
-namespace {
-bool isBlank(std::string_view s) {
-    return s.find_first_not_of(" \t\r\n") == std::string_view::npos;
-}
-}
+#include <charconv>
 
 // Пустые название и автор допускаются только у объекта по умолчанию,
 // который потом заполняется через operator>>; сеттеры пустые значения не пропускают.
@@ -31,17 +25,24 @@ int Publication::getYear() const { return year; }
 bool Publication::getIsBorrowed() const { return isBorrowed; }
 std::weak_ptr<ScientificLibrary> Publication::getLibraryRef() const { return libraryRef; }
 
+bool Publication::isBlank(std::string_view s) {
+    return s.find_first_not_of(" \t\r\n") == std::string_view::npos;
+}
+void Publication::requireNotBlank(std::string_view value, std::string_view fieldName) {
+    if (isBlank(value)) throw InvalidDataException(std::string(fieldName) + " не может быть пустым!");
+}
+
 void Publication::setTitle(std::string_view t) {
-    if (isBlank(t)) throw std::invalid_argument("Ошибка: название не может быть пустым!");
+    requireNotBlank(t, "Название");
     title = t;
 }
 void Publication::setAuthor(std::string_view a) {
-    if (isBlank(a)) throw std::invalid_argument("Ошибка: автор не может быть пустым!");
+    requireNotBlank(a, "Автор");
     author = a;
 }
 void Publication::setYear(int y) {
     if (y <= 0 || y > CURRENT_YEAR) {
-        throw std::invalid_argument(std::format("Ошибка: год издания должен быть от 1 до {}!", CURRENT_YEAR));
+        throw InvalidDataException(std::format("год издания должен быть от 1 до {} (введено {})!", CURRENT_YEAR, y));
     }
     year = y;
 }
@@ -60,23 +61,27 @@ bool Publication::hasSameCommonData(const Publication& other) const {
     return title == other.title && author == other.author && year == other.year;
 }
 
-int Publication::readInt(std::istream& is, std::string_view prompt) {
-    std::cout << prompt;
-    int value;
-    if (!(is >> value)) {
-        is.clear();
-        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        throw std::invalid_argument("Ошибка: нужно ввести целое число!");
-    }
-    is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    return value;
-}
-
 std::string Publication::readLine(std::istream& is, std::string_view prompt) {
     std::cout << prompt;
     std::string s;
-    if (!std::getline(is, s)) throw InputAbortedError("Ошибка: ввод прерван!");
+    if (!std::getline(is, s)) throw InputAbortedException("поток ввода закрыт!");
     return s;
+}
+
+// Читает строку целиком и требует, чтобы вся она была целым числом ("12abc" - ошибка).
+int Publication::readInt(std::istream& is, std::string_view prompt) {
+    const std::string line = readLine(is, prompt);
+    const auto first = line.find_first_not_of(" \t\r\n");
+    if (first == std::string::npos) throw InvalidDataException("нужно ввести целое число, а введена пустая строка!");
+    const auto last = line.find_last_not_of(" \t\r\n");
+    const std::string_view text = std::string_view(line).substr(first, last - first + 1);
+
+    int value = 0;
+    const auto [ptr, ec] = std::from_chars(text.data(), text.data() + text.size(), value);
+    if (ec != std::errc{} || ptr != text.data() + text.size()) {
+        throw InvalidDataException("нужно ввести целое число, получено \"" + std::string(text) + "\"!");
+    }
+    return value;
 }
 
 std::strong_ordering Publication::operator<=>(const Publication& other) const { return getLoanPeriod() <=> other.getLoanPeriod(); }
