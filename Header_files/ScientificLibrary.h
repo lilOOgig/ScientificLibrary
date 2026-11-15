@@ -5,7 +5,7 @@
 #include <string_view>
 #include "Collection.h"
 #include "Publication.h"
-#include "exceptions.h"
+#include "Exceptions.h"
 
 enum class SortKey { Title, Year, LoanPeriod };
 
