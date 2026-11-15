@@ -3,7 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "exceptions.h"
+#include "Exceptions.h"
 
 // ---------- ввод ----------
 
