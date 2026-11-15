@@ -1,9 +1,10 @@
 #include "Console.h"
+#include <format>
 #include <charconv>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "Exceptions.h"
+#include "exceptions.h"
 
 // ---------- ввод ----------
 
@@ -36,7 +37,7 @@ int readInteger(std::string_view prompt) {
     int value = 0;
     const auto [ptr, ec] = std::from_chars(text.data(), text.data() + text.size(), value);
     if (ec != std::errc{} || ptr != text.data() + text.size()) {
-        throw InvalidDataException("нужно ввести целое число, получено \"" + std::string(text) + "\"!");
+        throw InvalidDataException(std::format("нужно ввести целое число, получено \"{}\"!", text));
     }
     return value;
 }
@@ -45,8 +46,8 @@ int readInteger(std::string_view prompt) {
 
 void section(std::string_view title) {
     std::cout << "\n==================================================\n"
-        << title << "\n"
-        << "==================================================\n";
+              << title << "\n"
+              << "==================================================\n";
 }
 
 void step(std::string_view text) {
