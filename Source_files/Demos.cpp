@@ -8,61 +8,61 @@
 #include "ScientificLibrary.h"
 #include "exceptions.h"
 
-// ---------- ëàá. ¹6: îáðàáîòêà èñêëþ÷åíèé ----------
+// ---------- лаб. №6: обработка исключений ----------
 
 namespace {
 
     std::shared_ptr<ScientificLibrary> makeDemoLibrary(size_t capacity) {
-        auto lib = std::make_shared<ScientificLibrary>("Äåìî-áèáëèîòåêà", capacity);
-        *lib += std::make_shared<Book>("Òåñòîâàÿ êíèãà", "Àâòîð À.À.", 2020, 300);
+        auto lib = std::make_shared<ScientificLibrary>("Демо-библиотека", capacity);
+        *lib += std::make_shared<Book>("Тестовая книга", "Автор А.А.", 2020, 300);
         return lib;
     }
 
     void demoInvalidData() {
-        step("InvalidDataException: êíèãà ñ îòðèöàòåëüíûì ÷èñëîì ñòðàíèö");
-        Book book("Íåêîððåêòíàÿ êíèãà", "Àâòîð À.À.", 2020, -5);
+        step("InvalidDataException: книга с отрицательным числом страниц");
+        Book book("Некорректная книга", "Автор А.А.", 2020, -5);
     }
 
     void demoLimitExceeded() {
-        step("LimitExceededException: äîáàâëåíèå â áèáëèîòåêó, ðàññ÷èòàííóþ íà 1 èçäàíèå");
+        step("LimitExceededException: добавление в библиотеку, рассчитанную на 1 издание");
         auto lib = makeDemoLibrary(1);
-        *lib += std::make_shared<Book>("Âòîðàÿ êíèãà", "Àâòîð Á.Á.", 2021, 200);
+        *lib += std::make_shared<Book>("Вторая книга", "Автор Б.Б.", 2021, 200);
     }
 
     void demoDuplicate() {
-        step("DuplicateException: ïîâòîðíîå äîáàâëåíèå òàêîãî æå èçäàíèÿ");
+        step("DuplicateException: повторное добавление такого же издания");
         auto lib = makeDemoLibrary(5);
-        *lib += std::make_shared<Book>("Òåñòîâàÿ êíèãà", "Àâòîð À.À.", 2020, 300);
+        *lib += std::make_shared<Book>("Тестовая книга", "Автор А.А.", 2020, 300);
     }
 
     void demoNotFound() {
-        step("ObjectNotFoundException: âûäà÷à íåñóùåñòâóþùåãî èçäàíèÿ");
-        makeDemoLibrary(5)->issuePublication("Íåñóùåñòâóþùàÿ êíèãà", "Èâàíîâ È.È.");
+        step("ObjectNotFoundException: выдача несуществующего издания");
+        makeDemoLibrary(5)->issuePublication("Несуществующая книга", "Иванов И.И.");
     }
 
     void demoOutOfRange() {
-        step("OutOfRangeException: îáðàùåíèå ê èçäàíèþ ïîä íîìåðîì 10 â êàòàëîãå èç îäíîãî èçäàíèÿ");
+        step("OutOfRangeException: обращение к изданию под номером 10 в каталоге из одного издания");
         makeDemoLibrary(5)->getByNumber(10);
     }
 
     void demoInvalidOperation() {
-        step("InvalidOperationException: ïîâòîðíàÿ âûäà÷à óæå âûäàííîãî èçäàíèÿ");
+        step("InvalidOperationException: повторная выдача уже выданного издания");
         auto lib = makeDemoLibrary(5);
-        lib->issuePublication("Òåñòîâàÿ êíèãà", "Èâàíîâ È.È.");
-        lib->issuePublication("Òåñòîâàÿ êíèãà", "Ïåòðîâ Ï.Ï.");
+        lib->issuePublication("Тестовая книга", "Иванов И.И.");
+        lib->issuePublication("Тестовая книга", "Петров П.П.");
     }
 
     void demoRelation() {
-        step("RelationException: ñïèñàíèå èçäàíèÿ, êîòîðîå íàõîäèòñÿ íà ðóêàõ ó ÷èòàòåëÿ");
+        step("RelationException: списание издания, которое находится на руках у читателя");
         auto lib = makeDemoLibrary(5);
-        lib->issuePublication("Òåñòîâàÿ êíèãà", "Èâàíîâ È.È.");
-        lib->removePublication("Òåñòîâàÿ êíèãà");
+        lib->issuePublication("Тестовая книга", "Иванов И.И.");
+        lib->removePublication("Тестовая книга");
     }
 
 }  // namespace
 
 bool demonstrateExceptions() {
-    section("Ëàá ¹6: äåìîíñòðàöèÿ èñêëþ÷èòåëüíûõ ñèòóàöèé");
+    section("Лаб №6: демонстрация исключительных ситуаций");
     const std::vector<void (*)()> demos = {
         demoInvalidData, demoLimitExceeded, demoDuplicate, demoNotFound,
         demoOutOfRange, demoInvalidOperation, demoRelation
@@ -70,6 +70,6 @@ bool demonstrateExceptions() {
     for (auto demo : demos) {
         if (!runSafely(demo)) return false;
     }
-    std::cout << "\nÂñå ñèòóàöèè îáðàáîòàíû, ïðîãðàììà ïðîäîëæàåò ðàáîòó.\n";
+    std::cout << "\nВсе ситуации обработаны, программа продолжает работу.\n";
     return true;
 }
