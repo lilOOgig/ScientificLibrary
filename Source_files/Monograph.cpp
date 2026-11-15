@@ -1,18 +1,22 @@
 #include "Monograph.h"
 
 Monograph::Monograph(std::string_view t, std::string_view a, int y, std::string_view isbnVal, int circ, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), isbn(isbnVal) {
+    : Publication(t, a, y, lib) {
+    setIsbn(isbnVal);
     setCirculation(circ);
 }
 
 std::string_view Monograph::getIsbn() const { return isbn; }
-void Monograph::setIsbn(std::string_view value) { isbn = value; }
+void Monograph::setIsbn(std::string_view value) {
+    requireNotBlank(value, "ISBN");
+    isbn = value;
+}
 void Monograph::printIsbn(std::ostream& os) const { os << "ISBN: " << isbn; }
 void Monograph::readIsbn(std::istream& is) { setIsbn(readLine(is, "Введите ISBN: ")); }
 
 int Monograph::getCirculation() const { return circulation; }
 void Monograph::setCirculation(int circ) {
-    if (circ <= 0) throw std::invalid_argument("Ошибка: тираж должен быть положительным!");
+    if (circ <= 0) throw InvalidDataException("тираж должен быть положительным (введено " + std::to_string(circ) + ")!");
     circulation = circ;
 }
 void Monograph::printCirculation(std::ostream& os) const { os << "Тираж: " << circulation << " экз."; }
