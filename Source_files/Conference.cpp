@@ -1,16 +1,24 @@
 #include "Conference.h"
 
 Conference::Conference(std::string_view t, std::string_view a, int y, std::string_view confName, std::string_view loc, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), conferenceName(confName), location(loc) {
+    : Publication(t, a, y, lib) {
+    setConferenceName(confName);
+    setLocation(loc);
 }
 
 std::string_view Conference::getConferenceName() const { return conferenceName; }
-void Conference::setConferenceName(std::string_view name) { conferenceName = name; }
+void Conference::setConferenceName(std::string_view name) {
+    requireNotBlank(name, "Название конференции");
+    conferenceName = name;
+}
 void Conference::printConferenceName(std::ostream& os) const { os << "Мероприятие: " << conferenceName; }
 void Conference::readConferenceName(std::istream& is) { setConferenceName(readLine(is, "Введите название конференции: ")); }
 
 std::string_view Conference::getLocation() const { return location; }
-void Conference::setLocation(std::string_view loc) { location = loc; }
+void Conference::setLocation(std::string_view loc) {
+    requireNotBlank(loc, "Место проведения");
+    location = loc;
+}
 void Conference::printLocation(std::ostream& os) const { os << "Место: " << location; }
 void Conference::readLocation(std::istream& is) { setLocation(readLine(is, "Введите место проведения: ")); }
 
