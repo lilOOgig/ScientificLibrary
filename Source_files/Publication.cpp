@@ -29,7 +29,7 @@ bool Publication::isBlank(std::string_view s) {
     return s.find_first_not_of(" \t\r\n") == std::string_view::npos;
 }
 void Publication::requireNotBlank(std::string_view value, std::string_view fieldName) {
-    if (isBlank(value)) throw InvalidDataException(std::string(fieldName) + " не может быть пустым!");
+    if (isBlank(value)) throw InvalidDataException(std::format("{} не может быть пустым!", fieldName));
 }
 
 void Publication::setTitle(std::string_view t) {
@@ -79,7 +79,7 @@ int Publication::readInt(std::istream& is, std::string_view prompt) {
     int value = 0;
     const auto [ptr, ec] = std::from_chars(text.data(), text.data() + text.size(), value);
     if (ec != std::errc{} || ptr != text.data() + text.size()) {
-        throw InvalidDataException("нужно ввести целое число, получено \"" + std::string(text) + "\"!");
+        throw InvalidDataException(std::format("нужно ввести целое число, получено \"{}\"!", text));
     }
     return value;
 }
