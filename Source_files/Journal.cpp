@@ -1,4 +1,5 @@
 #include "Journal.h"
+#include <format>
 
 Journal::Journal(std::string_view t, std::string_view a, int y, int volume, std::string_view pub, std::weak_ptr<ScientificLibrary> lib)
     : Publication(t, a, y, lib) {
@@ -8,7 +9,7 @@ Journal::Journal(std::string_view t, std::string_view a, int y, int volume, std:
 
 int Journal::getVolumeNumber() const { return volumeNumber; }
 void Journal::setVolumeNumber(int volume) {
-    if (volume <= 0) throw InvalidDataException("номер тома должен быть положительным (введено " + std::to_string(volume) + ")!");
+    if (volume <= 0) throw InvalidDataException(std::format("номер тома должен быть положительным (введено {})!", volume));
     volumeNumber = volume;
 }
 void Journal::printVolumeNumber(std::ostream& os) const { os << "Том: " << volumeNumber; }
