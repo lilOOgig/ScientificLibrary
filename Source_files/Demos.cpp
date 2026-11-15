@@ -6,7 +6,7 @@
 #include "Console.h"
 #include "ErrorHandler.h"
 #include "ScientificLibrary.h"
-#include "exceptions.h"
+#include "Exceptions.h"
 
 // ---------- лаб. №6: обработка исключений ----------
 
