@@ -1,57 +1,20 @@
-#include "ErrorHandler.h"
-#include <iostream>
-#include "Exceptions.h"
+#pragma once
+#include <exception>
 
-// Единая точка обработки: вызывается из блока catch(...) и по типу исключения выбирает свою реакцию.
+// Единая обработка исключений системы (лаб. №6).
+// Вызывается из блока catch и получает пойманное исключение (std::current_exception()):
+// по его типу выводит своё сообщение.
 // Возвращает false, если работу программы продолжать нельзя (закрыт поток ввода).
-bool handleException() {
-    try {
-        throw;
-    }
-    catch (const InvalidDataException& e) {
-        std::cout << "\n[ОШИБКА ДАННЫХ] " << e.what() << "\nПроверьте введённые значения и повторите операцию.\n";
-    }
-    catch (const ObjectNotFoundException& e) {
-        std::cout << "\n[НЕ НАЙДЕНО] " << e.what() << "\nПосмотрите каталог (пункт 1) и проверьте название.\n";
-    }
-    catch (const DuplicateException& e) {
-        std::cout << "\n[ДУБЛИКАТ] " << e.what() << "\nОперация отклонена, фонд не изменён.\n";
-    }
-    catch (const LimitExceededException& e) {
-        std::cout << "\n[ОГРАНИЧЕНИЕ] " << e.what() << "\nУменьшите значение или освободите место.\n";
-    }
-    catch (const InvalidOperationException& e) {
-        std::cout << "\n[НЕДОПУСТИМАЯ ОПЕРАЦИЯ] " << e.what() << "\nСостояние издания не изменилось.\n";
-    }
-    catch (const OutOfRangeException& e) {
-        std::cout << "\n[ВЫХОД ЗА ГРАНИЦЫ] " << e.what() << "\nУкажите значение из допустимого диапазона.\n";
-    }
-    catch (const RelationException& e) {
-        std::cout << "\n[СВЯЗЬ НАРУШЕНА] " << e.what() << "\nСначала устраните связь (например, верните издание).\n";
-    }
-    catch (const InputAbortedException& e) {
-        std::cout << "\n[ВВОД ПРЕРВАН] " << e.what() << "\nПрограмма завершает работу.\n";
-        return false;
-    }
-    catch (const LibraryException& e) {
-        std::cout << "\n[ОШИБКА БИБЛИОТЕКИ] " << e.what() << "\n";
-    }
-    catch (const std::exception& e) {
-        std::cout << "\n[НЕПРЕДВИДЕННАЯ ОШИБКА] " << e.what() << "\n";
-    }
-    catch (...) {
-        std::cout << "\n[НЕИЗВЕСТНАЯ ОШИБКА]\n";
-    }
-    return true;
-}
+bool handleException(std::exception_ptr error);
 
 // Выполняет действие; любая ошибка обрабатывается, программа продолжает работу.
-bool runSafely(const std::function<void()>& action) {
+template <typename Action>
+bool runSafely(Action&& action) {
     try {
         action();
     }
-    catch (...) {
-        return handleException();
+    catch (const std::exception&) {
+        return handleException(std::current_exception());
     }
     return true;
 }
