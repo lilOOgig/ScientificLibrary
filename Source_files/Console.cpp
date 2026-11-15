@@ -5,7 +5,7 @@
 #include <string>
 #include "exceptions.h"
 
-// ---------- ‚‚Ó‰ ----------
+// ---------- √¢√¢√Æ√§ ----------
 
 int readNumber(std::string_view prompt) {
     std::string line;
@@ -13,35 +13,35 @@ int readNumber(std::string_view prompt) {
     char tail;
     while (true) {
         std::cout << prompt;
-        if (!std::getline(std::cin, line)) return 0;   // ÍÓÌÂˆ ‚‚Ó‰‡: ‚˚ıÓ‰ËÏ ËÁ ÔÓ„‡ÏÏ˚
+        if (!std::getline(std::cin, line)) return 0;   // √™√Æ√≠√•√∂ √¢√¢√Æ√§√†: √¢√ª√µ√Æ√§√®√¨ √®√ß √Ø√∞√Æ√£√∞√†√¨√¨√ª
         if (std::stringstream ss(line); ss >> val && !(ss >> tail)) return val;
-        std::cout << "ÕÂ‚ÂÌ˚È ‚‚Ó‰! ¬‚Â‰ËÚÂ ˆÂÎÓÂ ˜ËÒÎÓ.\n";
+        std::cout << "√ç√•√¢√•√∞√≠√ª√© √¢√¢√Æ√§! √Ç√¢√•√§√®√≤√• √∂√•√´√Æ√• √∑√®√±√´√Æ.\n";
     }
 }
 
 std::string readText(std::string_view prompt) {
     std::cout << prompt;
     std::string line;
-    if (!std::getline(std::cin, line)) throw InputAbortedException("ÔÓÚÓÍ ‚‚Ó‰‡ Á‡Í˚Ú!");
+    if (!std::getline(std::cin, line)) throw InputAbortedException("√Ø√Æ√≤√Æ√™ √¢√¢√Æ√§√† √ß√†√™√∞√ª√≤!");
     return line;
 }
 
 int readInteger(std::string_view prompt) {
     const std::string line = readText(prompt);
     const auto first = line.find_first_not_of(" \t\r\n");
-    if (first == std::string::npos) throw InvalidDataException("ÌÛÊÌÓ ‚‚ÂÒÚË ˆÂÎÓÂ ˜ËÒÎÓ, ‡ ‚‚Â‰ÂÌ‡ ÔÛÒÚ‡ˇ ÒÚÓÍ‡!");
+    if (first == std::string::npos) throw InvalidDataException("√≠√≥√¶√≠√Æ √¢√¢√•√±√≤√® √∂√•√´√Æ√• √∑√®√±√´√Æ, √† √¢√¢√•√§√•√≠√† √Ø√≥√±√≤√†√ø √±√≤√∞√Æ√™√†!");
     const auto last = line.find_last_not_of(" \t\r\n");
     const std::string_view text = std::string_view(line).substr(first, last - first + 1);
 
     int value = 0;
     const auto [ptr, ec] = std::from_chars(text.data(), text.data() + text.size(), value);
     if (ec != std::errc{} || ptr != text.data() + text.size()) {
-        throw InvalidDataException("ÌÛÊÌÓ ‚‚ÂÒÚË ˆÂÎÓÂ ˜ËÒÎÓ, ÔÓÎÛ˜ÂÌÓ \"" + std::string(text) + "\"!");
+        throw InvalidDataException("√≠√≥√¶√≠√Æ √¢√¢√•√±√≤√® √∂√•√´√Æ√• √∑√®√±√´√Æ, √Ø√Æ√´√≥√∑√•√≠√Æ \"" + std::string(text) + "\"!");
     }
     return value;
 }
 
-// ---------- ÓÙÓÏÎÂÌËÂ ‚˚‚Ó‰‡ ----------
+// ---------- √Æ√¥√Æ√∞√¨√´√•√≠√®√• √¢√ª√¢√Æ√§√† ----------
 
 void section(std::string_view title) {
     std::cout << "\n==================================================\n"
