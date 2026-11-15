@@ -1,6 +1,6 @@
 #pragma once
 #include <exception>
-#include "exceptions.h"
+#include "Exceptions.h"
 
 // Единая обработка исключений системы (лаб. №6).
 // Вызывается из блока catch (const LibraryException&) и получает пойманное исключение
