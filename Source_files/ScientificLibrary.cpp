@@ -14,12 +14,11 @@ std::shared_ptr<Publication> ScientificLibrary::requireByTitle(std::string_view 
     if (pubTitle.empty()) throw InvalidDataException("название издания не указано!");
 
     auto item = items.find([pubTitle](const Publication& p) { return p.getTitle() == pubTitle; });
-    if (!item) throw ObjectNotFoundException("издание \"" + std::string(pubTitle) + "\" отсутствует в каталоге!");
+    if (!item) throw ObjectNotFoundException(std::format("издание \"{}\" отсутствует в каталоге!", pubTitle));
 
     // Издание, привязанное к другой библиотеке, обслуживать здесь нельзя.
-    const auto owner = item->getLibraryRef().lock();
-    if (owner && owner.get() != this) {
-        throw RelationException("издание \"" + std::string(pubTitle) + "\" привязано к другой библиотеке!");
+    if (const auto owner = item->getLibraryRef().lock(); owner && owner.get() != this) {
+        throw RelationException(std::format("издание \"{}\" привязано к другой библиотеке!", pubTitle));
     }
     return item;
 }
@@ -54,18 +53,18 @@ void ScientificLibrary::issuePublication(std::string_view pubTitle, std::string_
 
     auto item = requireByTitle(pubTitle);
     if (item->getIsBorrowed()) {
-        throw InvalidOperationException("издание \"" + std::string(pubTitle) + "\" уже выдано читателю!");
+        throw InvalidOperationException(std::format("издание \"{}\" уже выдано читателю!", pubTitle));
     }
 
     item->setBorrowed(true);
     std::cout << "Издание \"" << pubTitle << "\" выдано читателю " << userName
-        << " на " << item->getLoanPeriod() << " дн.\n";
+              << " на " << item->getLoanPeriod() << " дн.\n";
 }
 
 void ScientificLibrary::returnPublication(std::string_view pubTitle) const {
     auto item = requireByTitle(pubTitle);
     if (!item->getIsBorrowed()) {
-        throw InvalidOperationException("экземпляр \"" + std::string(pubTitle) + "\" уже на полке, возвращать нечего!");
+        throw InvalidOperationException(std::format("экземпляр \"{}\" уже на полке, возвращать нечего!", pubTitle));
     }
 
     item->setBorrowed(false);
@@ -86,10 +85,10 @@ void ScientificLibrary::showCatalog() const {
 
 // Продлить можно только то, что сейчас на руках у читателей.
 void ScientificLibrary::extendAllLoans(int days) const {
-    if (days <= 0) throw InvalidDataException("срок продления должен быть положительным (введено " + std::to_string(days) + ")!");
+    if (days <= 0) throw InvalidDataException(std::format("срок продления должен быть положительным (введено {})!", days));
     if (days > MAX_EXTENSION_DAYS) {
-        throw LimitExceededException("продлить можно не более чем на " + std::to_string(MAX_EXTENSION_DAYS) +
-            " дн. за раз (запрошено " + std::to_string(days) + ")!");
+        throw LimitExceededException(
+            std::format("продлить можно не более чем на {} дн. за раз (запрошено {})!", MAX_EXTENSION_DAYS, days));
     }
 
     std::cout << "\n=== Продление выданных изданий на " << days << " дн. ===\n";
@@ -103,8 +102,7 @@ void ScientificLibrary::extendAllLoans(int days) const {
         std::cout << item->getType() << " \"" << item->getTitle() << "\": ";
         if (granted == 0) {
             std::cout << "продление недоступно, срок " << item->getLoanPeriod() << " дн.\n";
-        }
-        else {
+        } else {
             std::cout << "продлено на " << granted << " дн., новый срок " << item->getLoanPeriod() + granted << " дн.\n";
         }
     }
@@ -141,15 +139,15 @@ void ScientificLibrary::showStatistics() const {
     std::cout << "\n--- Статистика фонда: " << name << " ---\n";
     const size_t issued = items.findAll([](const Publication& p) { return p.getIsBorrowed(); }).size();
     std::cout << "Изданий в фонде: " << items.size() << " из " << maxCapacity << "\n"
-        << "Выдано читателям: " << issued << ", на полке: " << items.size() - issued << "\n";
+              << "Выдано читателям: " << issued << ", на полке: " << items.size() - issued << "\n";
     if (items.empty()) return;
 
     std::cout << std::format("Средний срок выдачи: {:.1f} дн.\n",
-        averageMetric(items, [](const Publication& p) { return p.getLoanPeriod(); }));
+                             averageMetric(items, [](const Publication& p) { return p.getLoanPeriod(); }));
     std::cout << std::format("Средний год издания: {:.1f}\n",
-        averageMetric(items, [](const Publication& p) { return p.getYear(); }));
+                             averageMetric(items, [](const Publication& p) { return p.getYear(); }));
 
-    std::map<std::string, int> byType;
+    std::map<std::string, int, std::less<>> byType;
     for (const auto& item : items) ++byType[std::string(item->getType())];
     std::cout << "По типам:\n";
     for (const auto& [type, count] : byType) std::cout << "  " << type << ": " << count << "\n";
@@ -159,7 +157,7 @@ void ScientificLibrary::showLoanPeriods() const {
     std::cout << "\n=== Сроки выдачи изданий фонда ===\n";
     for (const auto& item : items) {
         std::cout << item->getType() << " \"" << item->getTitle() << "\" — "
-            << item->getLoanPeriod() << " дн.\n";
+                  << item->getLoanPeriod() << " дн.\n";
     }
 }
 
@@ -170,8 +168,8 @@ void ScientificLibrary::findLongestLoan() const {
         return;
     }
     std::cout << "\nИздание с наибольшим сроком выдачи:\n"
-        << best->getType() << " \"" << best->getTitle() << "\" — "
-        << best->getLoanPeriod() << " дн.\n";
+              << best->getType() << " \"" << best->getTitle() << "\" — "
+              << best->getLoanPeriod() << " дн.\n";
 }
 
 void ScientificLibrary::searchByAuthor(std::string_view authorName) const {
@@ -189,25 +187,24 @@ ScientificLibrary& ScientificLibrary::operator+=(const std::shared_ptr<Publicati
     if (!pub) throw InvalidDataException("нельзя добавить пустое издание!");
 
     // Издание уже привязано к другой библиотеке - добавлять его сюда нельзя.
-    const auto owner = pub->getLibraryRef().lock();
-    if (owner && owner.get() != this) {
-        throw RelationException("издание \"" + std::string(pub->getTitle()) + "\" уже числится в другой библиотеке!");
+    if (const auto owner = pub->getLibraryRef().lock(); owner && owner.get() != this) {
+        throw RelationException(std::format("издание \"{}\" уже числится в другой библиотеке!", pub->getTitle()));
     }
 
     if (items.find([&pub](const Publication& p) { return p == *pub; })) {
-        throw DuplicateException("издание \"" + std::string(pub->getTitle()) + "\" уже есть в библиотеке!");
+        throw DuplicateException(std::format("издание \"{}\" уже есть в библиотеке!", pub->getTitle()));
     }
     // ISBN - уникальный идентификатор монографии
     if (const auto* mono = dynamic_cast<const Monograph*>(pub.get())) {
         const bool isbnTaken = items.find([mono](const Publication& p) {
             const auto* other = dynamic_cast<const Monograph*>(&p);
             return other && other->getIsbn() == mono->getIsbn();
-            }) != nullptr;
-        if (isbnTaken) throw DuplicateException("монография с ISBN " + std::string(mono->getIsbn()) + " уже есть в фонде!");
+        }) != nullptr;
+        if (isbnTaken) throw DuplicateException(std::format("монография с ISBN {} уже есть в фонде!", mono->getIsbn()));
     }
 
     if (items.size() >= maxCapacity) {
-        throw LimitExceededException("лимит фонда исчерпан (" + std::to_string(maxCapacity) + " изд.)!");
+        throw LimitExceededException(std::format("лимит фонда исчерпан ({} изд.)!", maxCapacity));
     }
 
     items.add(pub);
@@ -222,8 +219,8 @@ ScientificLibrary& ScientificLibrary::operator-=(const std::shared_ptr<Publicati
     auto stored = items.find([&pub](const Publication& p) { return p == *pub; });
     if (!stored) throw ObjectNotFoundException("издание для удаления отсутствует в фонде!");
     if (stored->getIsBorrowed()) {
-        throw RelationException("нельзя списать издание \"" + std::string(stored->getTitle()) +
-            "\", пока оно на руках у читателя!");
+        throw RelationException(
+            std::format("нельзя списать издание \"{}\", пока оно на руках у читателя!", stored->getTitle()));
     }
 
     items.removeIf([&stored](const Publication& p) { return &p == stored.get(); });
