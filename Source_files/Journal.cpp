@@ -1,20 +1,24 @@
 #include "Journal.h"
 
 Journal::Journal(std::string_view t, std::string_view a, int y, int volume, std::string_view pub, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), publisher(pub) {
+    : Publication(t, a, y, lib) {
     setVolumeNumber(volume);
+    setPublisher(pub);
 }
 
 int Journal::getVolumeNumber() const { return volumeNumber; }
 void Journal::setVolumeNumber(int volume) {
-    if (volume <= 0) throw std::invalid_argument("Ошибка: номер тома должен быть положительным!");
+    if (volume <= 0) throw InvalidDataException("номер тома должен быть положительным (введено " + std::to_string(volume) + ")!");
     volumeNumber = volume;
 }
 void Journal::printVolumeNumber(std::ostream& os) const { os << "Том: " << volumeNumber; }
 void Journal::readVolumeNumber(std::istream& is) { setVolumeNumber(readInt(is, "Введите номер тома: ")); }
 
 std::string_view Journal::getPublisher() const { return publisher; }
-void Journal::setPublisher(std::string_view pub) { publisher = pub; }
+void Journal::setPublisher(std::string_view pub) {
+    requireNotBlank(pub, "Издательство");
+    publisher = pub;
+}
 void Journal::printPublisher(std::ostream& os) const { os << "Издательство: " << publisher; }
 void Journal::readPublisher(std::istream& is) { setPublisher(readLine(is, "Введите издательство: ")); }
 
