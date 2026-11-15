@@ -30,8 +30,8 @@ int main() {
         *lib += std::make_shared<Journal>("Научный Вестник", "Коллектив", 2022, 12, "Наука", lib);
         *lib += std::make_shared<Conference>("Доклад по ИИ", "Петров П.П.", 2024, "ИТ-Форум", "Москва", lib);
     }
-    catch (...) {
-        handleException();   // начальный фонд мог не заполниться полностью, но меню всё равно работает
+    catch (const std::exception&) {
+        handleException(std::current_exception());   // начальный фонд мог не заполниться полностью, но меню всё равно работает
     }
 
     int choice = -1;
@@ -42,8 +42,8 @@ int main() {
         try {
             executeChoice(choice, lib);
         }
-        catch (...) {
-            if (!handleException()) choice = 0;   // ввод закрыт - выходим штатно
+        catch (const std::exception&) {
+            if (!handleException(std::current_exception())) choice = 0;   // ввод закрыт - выходим штатно
         }
     }
     return 0;
