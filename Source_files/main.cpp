@@ -9,7 +9,7 @@
 #include "Conference.h"
 #include "Console.h"
 #include "ErrorHandler.h"
-#include "exceptions.h"
+#include "Exceptions.h"
 #include "Journal.h"
 #include "Menu.h"
 #include "Monograph.h"
