@@ -1,6 +1,6 @@
 #include "ErrorHandler.h"
 #include <iostream>
-#include "exceptions.h"
+#include "Exceptions.h"
 
 // Единая точка обработки: вызывается из блока catch(...) и по типу исключения выбирает свою реакцию.
 // Возвращает false, если работу программы продолжать нельзя (закрыт поток ввода).
