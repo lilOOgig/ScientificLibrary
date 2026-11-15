@@ -1,7 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <format>
-#include "exceptions.h"
+#include "Exceptions.h"
 
 template <typename T>
 void Collection<T>::add(const std::shared_ptr<T>& item) {
