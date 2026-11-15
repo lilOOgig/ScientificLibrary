@@ -2,7 +2,7 @@
 #include <iostream>
 #include "Demos.h"
 #include "Scenarios.h"
-#include "exceptions.h"
+#include "Exceptions.h"
 
 void printMenu() {
     std::cout << "\n=== СИСТЕМА УПРАВЛЕНИЯ НАУЧНОЙ БИБЛИОТЕКОЙ ===\n"
