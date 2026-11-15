@@ -86,10 +86,11 @@ void showSortedFromInput(const ScientificLibrary& lib) {
     section("Каталог с сортировкой");
     std::cout << "1 - по названию\n2 - по году издания\n3 - по сроку выдачи\n";
     const int choice = readInteger("Ваш выбор: ");
+    using enum SortKey;
     switch (choice) {
-    case 1: lib.showSorted(SortKey::Title); break;
-    case 2: lib.showSorted(SortKey::Year); break;
-    case 3: lib.showSorted(SortKey::LoanPeriod); break;
+    case 1: lib.showSorted(Title); break;
+    case 2: lib.showSorted(Year); break;
+    case 3: lib.showSorted(LoanPeriod); break;
     default: throw InvalidDataException(std::format("неизвестный вариант сортировки: {}!", choice));
     }
 }
