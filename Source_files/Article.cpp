@@ -2,18 +2,22 @@
 #include <format>
 
 Article::Article(std::string_view t, std::string_view a, int y, std::string_view jName, int issue, std::weak_ptr<ScientificLibrary> lib)
-    : Publication(t, a, y, lib), journalName(jName) {
+    : Publication(t, a, y, lib) {
+    setJournalName(jName);
     setIssueNumber(issue);
 }
 
 std::string_view Article::getJournalName() const { return journalName; }
-void Article::setJournalName(std::string_view name) { journalName = name; }
+void Article::setJournalName(std::string_view name) {
+    requireNotBlank(name, "Название журнала");
+    journalName = name;
+}
 void Article::printJournalName(std::ostream& os) const { os << "Журнал: " << journalName; }
 void Article::readJournalName(std::istream& is) { setJournalName(readLine(is, "Введите название журнала: ")); }
 
 int Article::getIssueNumber() const { return issueNumber; }
 void Article::setIssueNumber(int issue) {
-    if (issue <= 0) throw std::invalid_argument("Ошибка: номер выпуска должен быть положительным!");
+    if (issue <= 0) throw InvalidDataException("номер выпуска должен быть положительным (введено " + std::to_string(issue) + ")!");
     issueNumber = issue;
 }
 void Article::printIssueNumber(std::ostream& os) const { os << "Выпуск №" << issueNumber; }
