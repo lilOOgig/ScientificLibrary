@@ -1,10 +1,20 @@
 #pragma once
-#include <functional>
+#include <exception>
 
 // Единая обработка исключений системы (лаб. №6).
-// Вызывается из блока catch(...): по типу текущего исключения выводит своё сообщение.
+// Вызывается из блока catch и получает пойманное исключение (std::current_exception()):
+// по его типу выводит своё сообщение.
 // Возвращает false, если работу программы продолжать нельзя (закрыт поток ввода).
-bool handleException();
+bool handleException(std::exception_ptr error);
 
 // Выполняет действие; любая ошибка обрабатывается, программа продолжает работу.
-bool runSafely(const std::function<void()>& action);
+template <typename Action>
+bool runSafely(Action&& action) {
+    try {
+        action();
+    }
+    catch (const std::exception&) {
+        return handleException(std::current_exception());
+    }
+    return true;
+}
