@@ -1,17 +1,17 @@
 #pragma once
 #include <algorithm>
 #include <format>
-#include <stdexcept>
+#include "exceptions.h"
 
 template <typename T>
 void Collection<T>::add(const std::shared_ptr<T>& item) {
-    if (!item) throw std::invalid_argument("Нельзя добавить пустой указатель в коллекцию!");
+    if (!item) throw InvalidDataException("нельзя добавить пустой указатель в коллекцию!");
     items.push_back(item);
 }
 
 template <typename T>
 void Collection<T>::removeAt(size_t index) {
-    if (index >= items.size()) throw std::out_of_range(std::format("Индекс {} за пределами коллекции (размер {})!", index, items.size()));
+    if (index >= items.size()) throw OutOfRangeException(std::format("индекс {} за пределами коллекции (размер {})!", index, items.size()));
     items.erase(items.begin() + index);
 }
 
@@ -23,7 +23,7 @@ size_t Collection<T>::removeIf(Predicate pred) {
 
 template <typename T>
 std::shared_ptr<T> Collection<T>::get(size_t index) const {
-    if (index >= items.size()) throw std::out_of_range(std::format("Индекс {} за пределами коллекции (размер {})!", index, items.size()));
+    if (index >= items.size()) throw OutOfRangeException(std::format("индекс {} за пределами коллекции (размер {})!", index, items.size()));
     return items[index];
 }
 
