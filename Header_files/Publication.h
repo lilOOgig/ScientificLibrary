@@ -6,14 +6,9 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include "exceptions.h"
 
 class ScientificLibrary;
-
-// Ввод прерван (например, закончился поток ввода)
-class InputAbortedError : public std::runtime_error {
-public:
-    using std::runtime_error::runtime_error;
-};
 
 // Абстрактный базовый класс иерархии изданий
 class Publication {
@@ -66,6 +61,9 @@ public:
 
 protected:
     static int limitDays(int days, int limit) { return std::clamp(days, 0, limit); }
+    static bool isBlank(std::string_view s);
+    // Бросает InvalidDataException, если строка пустая или состоит из пробельных символов.
+    static void requireNotBlank(std::string_view value, std::string_view fieldName);
     bool hasSameCommonData(const Publication& other) const;
 
     static int readInt(std::istream& is, std::string_view prompt);
