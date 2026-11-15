@@ -8,7 +8,7 @@ Book::Book(std::string_view t, std::string_view a, int y, int pages, std::weak_p
 
 int Book::getPageCount() const { return pageCount; }
 void Book::setPageCount(int pages) {
-    if (pages <= 0) throw std::invalid_argument("Ошибка: количество страниц должно быть положительным!");
+    if (pages <= 0) throw InvalidDataException("количество страниц должно быть положительным (введено " + std::to_string(pages) + ")!");
     pageCount = pages;
 }
 void Book::printPageCount(std::ostream& os) const { os << "Страниц: " << pageCount; }
@@ -36,6 +36,6 @@ int Book::getLoanPeriod() const { return std::min(30, 14 + pageCount / 100); }
 int Book::getAllowedExtension(int requestedDays) const { return limitDays(requestedDays, getLoanPeriod() / 2); }
 
 int Book::getReadingDays(int pagesPerDay) const {
-    if (pagesPerDay <= 0) throw std::invalid_argument("Ошибка: норма чтения должна быть положительной!");
+    if (pagesPerDay <= 0) throw InvalidDataException("норма чтения должна быть положительной (введено " + std::to_string(pagesPerDay) + ")!");
     return (pageCount + pagesPerDay - 1) / pagesPerDay;
 }
