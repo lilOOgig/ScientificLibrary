@@ -1,6 +1,6 @@
 #include "ErrorHandler.h"
 #include <iostream>
-#include "Exceptions.h"
+#include "exceptions.h"
 
 // Единая точка обработки: по типу пойманного исключения выбирает свою реакцию.
 // Возвращает false, если работу программы продолжать нельзя (закрыт поток ввода).
@@ -33,11 +33,8 @@ bool handleException(std::exception_ptr error) {
         std::cout << "\n[ВВОД ПРЕРВАН] " << e.what() << "\nПрограмма завершает работу.\n";
         return false;
     }
-    catch (const LibraryException& e) {
+    catch (const LibraryException& e) {   // любая другая ошибка библиотеки
         std::cout << "\n[ОШИБКА БИБЛИОТЕКИ] " << e.what() << "\n";
-    }
-    catch (const std::exception& e) {
-        std::cout << "\n[НЕПРЕДВИДЕННАЯ ОШИБКА] " << e.what() << "\n";
     }
     return true;
 }
