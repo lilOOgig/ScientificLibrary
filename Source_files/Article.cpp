@@ -17,7 +17,7 @@ void Article::readJournalName(std::istream& is) { setJournalName(readLine(is, "�
 
 int Article::getIssueNumber() const { return issueNumber; }
 void Article::setIssueNumber(int issue) {
-    if (issue <= 0) throw InvalidDataException("номер выпуска должен быть положительным (введено " + std::to_string(issue) + ")!");
+    if (issue <= 0) throw InvalidDataException(std::format("номер выпуска должен быть положительным (введено {})!", issue));
     issueNumber = issue;
 }
 void Article::printIssueNumber(std::ostream& os) const { os << "Выпуск №" << issueNumber; }
